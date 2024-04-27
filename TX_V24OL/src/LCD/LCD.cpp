@@ -974,110 +974,117 @@ void LCD_MAIN(void)
 
       if( Pos_menu==ChoiceMenuMain ) /* Select Menu Version */
       {
-        if( MenuUPDOWN==Version ) MENU_VERSION();
-        else if( MenuUPDOWN==ChannelReserse ) 
-        {          
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_REVERSE();
+        switch (MenuUPDOWN)
+        {
+          case Version:
+            MENU_VERSION();
+            break;
 
-          UpDown_Menu_V1=0;
-          UpDown_Menu_V1_MAX=9;
-        }
-        else if( MenuUPDOWN==EndPoint ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_END_POINT();
+          case ChannelReserse:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_REVERSE();
 
-          UpDown_Menu_V1=0;
-          UpDown_Menu_V1_MAX=9;          
-        }
-        else if( MenuUPDOWN==GetChannelLimit ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_GET_CHANNEL_LIMIT();
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=9;
+            break;
 
-          UpDown_Menu_V1=0;
-          UpDown_Menu_V1_MAX=9;           
-        }
-        else if( MenuUPDOWN==Subtrim ) 
-        {
-          FEATURE_IN_DEVELOPMENT();
-        }
-        else if( MenuUPDOWN==SetPPM ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_SET_PPM();
+          case EndPoint:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_END_POINT();
 
-          UpDown_Menu_V1=0;
-          UpDown_Menu_V1_MAX=19;          
-        }
-        else if( MenuUPDOWN==BindRX ) 
-        {
-          MENU_BIND_RX(0);
-        }
-        else if( MenuUPDOWN==MixChannel ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=9;          
+            break;            
 
-          MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
-                          _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT,\
-                          _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);  
+          case GetChannelLimit:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_GET_CHANNEL_LIMIT();
 
-          UpDown_Menu_V1=0;
-          UpDown_Menu_V1_MAX=3;
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=9;              
+            break;
+
+          case Subtrim:
+            FEATURE_IN_DEVELOPMENT();
+            break;
+
+          case SetPPM:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_SET_PPM();
+
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=19;    
+            break;
+
+          case BindRX:
+            MENU_BIND_RX(0);
+            break;
+
+          case MixChannel:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+
+            MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
+                            _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT,\
+                            _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);  
+
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=3;
+            break;
+
+          case DisPlay:
+            MENU_DISPLAY();
+            break;
+
+          case MapChannel:
+            FEATURE_IN_DEVELOPMENT();
+            break;
+
+          case SetThrottleLock:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock);
+            break;
+
+          case SetTimeDown:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_TIME_DOWN(&_Virtual_Machine_.Minute, &_Virtual_Machine_.Second);
+            break;
+
+          case SetTXBattery:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_SET_PIN_TX();
+            break;
+
+          case SetRXBattery:
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_SET_PIN_RX();
+            break;
+
+          case AddModel:
+            FEATURE_IN_DEVELOPMENT();
+            break;
+
+          case SelectModel:
+            FEATURE_IN_DEVELOPMENT();
+            break;
+
+          case DeleteModel:
+            FEATURE_IN_DEVELOPMENT();
+            break;
+
+          case ResetDefault:
+            MENU_RESET(0);
+            break;                                                                                                                                                                                              
+          
+          default:
+            FEATURE_IN_DEVELOPMENT();
+            break;
         }
-        else if( MenuUPDOWN==DisPlay ) 
-        {
-          MENU_DISPLAY();
-        }
-        else if( MenuUPDOWN==MapChannel ) 
-        {
-          FEATURE_IN_DEVELOPMENT();
-        }
-        else if( MenuUPDOWN==SetThrottleLock ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock);
-        }
-        else if( MenuUPDOWN==SetTimeDown ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_TIME_DOWN(&_Virtual_Machine_.Minute, &_Virtual_Machine_.Second);
-        }
-        else if( MenuUPDOWN==SetTXBattery ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_SET_PIN_TX();
-        }
-        else if( MenuUPDOWN==SetRXBattery ) 
-        {
-          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-          MENU_SET_PIN_RX();
-        }
-        else if( MenuUPDOWN==AddModel ) 
-        {
-          FEATURE_IN_DEVELOPMENT();
-        }
-        else if( MenuUPDOWN==SelectModel ) 
-        {
-          FEATURE_IN_DEVELOPMENT();
-        }
-        else if( MenuUPDOWN==DeleteModel ) 
-        {
-          FEATURE_IN_DEVELOPMENT();
-        }
-        else if( MenuUPDOWN==ResetDefault ) 
-        {
-          MENU_RESET(0);
-        }
-        else 
-        {
-          FEATURE_IN_DEVELOPMENT();
-        }
-      }
+
+      } /* if( Pos_menu==ChoiceMenuMain ) */
 
       RESULT_BUTTON_OK=0;
       RESULT_BUTTON_BACK=0;
+
     }
 
     /* Button BACK */
@@ -1093,23 +1100,61 @@ void LCD_MAIN(void)
   }
   else if(Pos_menu==ChoiceMenuMain) /* Menu chuc nang */
   {
-    if( MenuUPDOWN==ChannelReserse ) MENU_REVERSE();
-    else if( MenuUPDOWN==SetTXBattery ) MENU_SET_PIN_TX();
-    else if( MenuUPDOWN==SetRXBattery ) MENU_SET_PIN_RX();
-    else if( MenuUPDOWN==DisPlay ) MENU_DISPLAY();
-    else if( MenuUPDOWN==SetPPM ) MENU_SET_PPM();
-    else if( MenuUPDOWN==GetChannelLimit ) MENU_GET_CHANNEL_LIMIT();
-    else if( MenuUPDOWN==ResetDefault ) MENU_RESET(0);
-    else if( MenuUPDOWN==BindRX ) MENU_BIND_RX(0);
-    else if( MenuUPDOWN==SetTimeDown ) MENU_TIME_DOWN(&_Virtual_Machine_.Minute, &_Virtual_Machine_.Second);
-    else if( MenuUPDOWN==SetThrottleLock ) MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock);
-    else if( MenuUPDOWN==EndPoint ) MENU_END_POINT();
-    else if( MenuUPDOWN==MixChannel )
+    switch (MenuUPDOWN)
     {
-      MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
+      case ChannelReserse:
+        MENU_REVERSE();
+        break;
+
+      case SetTXBattery:
+        MENU_SET_PIN_TX();
+        break;
+
+      case SetRXBattery:
+        MENU_SET_PIN_RX();
+        break;
+
+      case DisPlay:
+        MENU_DISPLAY();
+        break;
+
+      case SetPPM:
+        MENU_SET_PPM();
+        break;
+
+      case GetChannelLimit:
+        MENU_GET_CHANNEL_LIMIT();
+        break;
+
+      case ResetDefault:
+        MENU_RESET(0);
+        break;
+        
+      case BindRX:
+        MENU_BIND_RX(0);
+        break;     
+
+      case SetTimeDown:
+        MENU_TIME_DOWN(&_Virtual_Machine_.Minute, &_Virtual_Machine_.Second);
+        break;
+
+      case SetThrottleLock:
+        MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock);
+        break;
+
+      case EndPoint:
+        MENU_END_POINT();
+        break; 
+
+      case MixChannel:
+        MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
                       _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT,\
-                      _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);   
-    }
+                      _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);         
+        break;                                                                                    
+      
+      default:
+        break;
+    } /* switch (MenuUPDOWN) */
 
     if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
     {

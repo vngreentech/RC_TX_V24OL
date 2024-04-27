@@ -106,7 +106,14 @@ static void READ_ALL_DATA(void)
     DATA_READ.CH3 = _74HC4067_ReadPin(&_74HC4067_, CH3_THRO);
     DATA_READ.CH3 = KALMAN_CH3.updateEstimate((float)DATA_READ.CH3);
   }
-  else DATA_READ.CH3 = Machine.CHANNEL.Channel_3.Limit.MIN;
+  else 
+  {
+    if( Machine.CHANNEL.Channel_3.Reverse==TRUE )
+    {
+      DATA_READ.CH3 = Machine.CHANNEL.Channel_3.Limit.MIN;
+    }
+    else DATA_READ.CH3 = Machine.CHANNEL.Channel_3.Limit.MAX;
+  }
 
   DATA_READ.CH4 = _74HC4067_ReadPin(&_74HC4067_, CH4_RUD);
   DATA_READ.CH4 = KALMAN_CH4.updateEstimate((float)DATA_READ.CH4);

@@ -8,6 +8,29 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.6
+   * Date: 28,Apr,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * 
+   * - Design lại các biểu thức điều kiện để tối
+   * ưu hoá thuật toán, phương pháp so sánh điều
+   * kiện.
+   * 
+   * - Fix LỖI: Menu Set Throttle Lock, khi bật tắt
+   * Switch lock phải giữ thông số của channel
+   * Throttle, đúng hướng.
+   * 
+   * 
+  ************************************************/
+  #define FIRMWARE_VERSION ("V24OL.1.6")
+  #define RELEASES_DATE    ("28,Apr,2024")
+
+  /***********************************************
+   *    
    * Version: V24OL.1.5
    * Date: 27,Apr,2024
    * Dev: NhanNguyen
@@ -23,8 +46,8 @@
    * 
    * 
   ************************************************/
-  #define FIRMWARE_VERSION ("V24OL.1.5")
-  #define RELEASES_DATE    ("27,Apr,2024")
+  // #define FIRMWARE_VERSION ("V24OL.1.5")
+  // #define RELEASES_DATE    ("27,Apr,2024")
 
   /***********************************************
    *    
