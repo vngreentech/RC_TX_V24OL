@@ -8,6 +8,28 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.8
+   * Date: 29,Apr,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * 
+   * - Fix LỖI: Khi nhấn nút trim của 4 channel chính
+   * thì có lỗi lưu lại các giá trị cũ của converse,
+   * PPM value.
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.8")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("29,Apr,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.7
    * Date: 28,Apr,2024
    * Dev: NhanNguyen

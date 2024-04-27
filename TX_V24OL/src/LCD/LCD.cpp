@@ -869,6 +869,14 @@ static uint8_t Read_Button_BACK(void) /* 1<3000 ; 2>=3000 */
   return RESULT_BUTTON_BACK;
 }
 
+static void SAVE_CONFIG(void)
+{
+  memcpy(&Machine,&_Virtual_Machine_,sizeof(_Virtual_Machine_));
+
+  memcpy(&NewChannelConfig,&Machine.CHANNEL,sizeof(Machine.CHANNEL));
+  memcpy(&LastChannelConfig,&NewChannelConfig,sizeof(NewChannelConfig));
+}
+
 void LCD_INIT(void)
 {
   delay(200);
@@ -1283,7 +1291,7 @@ void LCD_MAIN(void)
 
           LED_ON;
           BUZZER_ON;
-          memcpy(&Machine,&_Virtual_Machine_,sizeof(_Virtual_Machine_));
+          SAVE_CONFIG();
           WRITE_CONFIG_MACHINE(&Machine);
           delay(1000);
           LED_OF;
@@ -1302,7 +1310,7 @@ void LCD_MAIN(void)
         {
           LED_ON;
           BUZZER_ON;
-          memcpy(&Machine,&_Virtual_Machine_,sizeof(_Virtual_Machine_));       
+          SAVE_CONFIG();       
           WRITE_CONFIG_MACHINE(&Machine);
           delay(1000);
           LED_OF;
@@ -1406,7 +1414,7 @@ void LCD_MAIN(void)
       {
         LED_ON;
         BUZZER_ON;
-        memcpy(&Machine,&_Virtual_Machine_,sizeof(_Virtual_Machine_));
+        SAVE_CONFIG();
         WRITE_CONFIG_MACHINE(&Machine);
         delay(1000);
         LED_OF;
