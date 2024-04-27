@@ -165,15 +165,59 @@ static void READ_ALL_DATA(void)
 
 static void Convert_RF_Data_Send(void)
 {
-  RF_DATA_SEND.CH1=F_SoftMap(&DATA_READ.CH1,\
-                             Machine.CHANNEL.Channel_1.Limit.MIN,Machine.CHANNEL.Channel_1.Trim_Value, Machine.CHANNEL.Channel_1.Limit.MAX, \
-                             &Machine.CHANNEL.Channel_1.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_1.Limit.TRIP_MAX, \
-                             &Machine.CHANNEL.Channel_1.Reverse);
+  static uint8_t READ_CH1, READ_CH2;
 
-  RF_DATA_SEND.CH2=F_SoftMap(&DATA_READ.CH2,\
-                             Machine.CHANNEL.Channel_2.Limit.MIN,Machine.CHANNEL.Channel_2.Trim_Value, Machine.CHANNEL.Channel_2.Limit.MAX, \
-                             &Machine.CHANNEL.Channel_2.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_2.Limit.TRIP_MAX, \
-                             &Machine.CHANNEL.Channel_2.Reverse);
+  READ_CH1=F_SoftMap(&DATA_READ.CH1,\
+                      Machine.CHANNEL.Channel_1.Limit.MIN,Machine.CHANNEL.Channel_1.Trim_Value, Machine.CHANNEL.Channel_1.Limit.MAX, \
+                      &Machine.CHANNEL.Channel_1.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_1.Limit.TRIP_MAX, \
+                      &Machine.CHANNEL.Channel_1.Reverse);
+
+  READ_CH2=F_SoftMap(&DATA_READ.CH2,\
+                      Machine.CHANNEL.Channel_2.Limit.MIN,Machine.CHANNEL.Channel_2.Trim_Value, Machine.CHANNEL.Channel_2.Limit.MAX, \
+                      &Machine.CHANNEL.Channel_2.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_2.Limit.TRIP_MAX, \
+                      &Machine.CHANNEL.Channel_2.Reverse);
+
+  if( Machine.CheckMixing==TRUE )
+  {
+    if( READ_CH2<(Machine.CHANNEL.Channel_2.Limit.MIDDLE) )
+    {    
+      if( ( ((READ_CH1)-(READ_CH2))+127 )<=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN; }
+      else if( ( ((READ_CH1)-(READ_CH2))+127 )>=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH1 = ((READ_CH1)-(READ_CH2))+127;
+
+      if( ( ((READ_CH1)+(READ_CH2))-127 )<=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN ) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN; }
+      else if(( ((READ_CH1)+(READ_CH2))-127 )>=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH2 = ( ((READ_CH1)+(READ_CH2))-127 );
+    }
+
+    if( READ_CH2>(Machine.CHANNEL.Channel_2.Limit.MIDDLE) )
+    {
+      READ_CH1 = map(READ_CH1,\
+                      Machine.CHANNEL.Channel_1.Limit.TRIP_MIN, Machine.CHANNEL.Channel_1.Limit.TRIP_MAX,\
+                      Machine.CHANNEL.Channel_1.Limit.TRIP_MAX, Machine.CHANNEL.Channel_1.Limit.TRIP_MIN);          
+
+      if( ( ((READ_CH1)-(READ_CH2))+127 )<=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN; }
+      else if( ( ((READ_CH1)-(READ_CH2))+127 )>=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH1 = (((READ_CH1)-(READ_CH2))+127);
+
+      if((((READ_CH1)+(READ_CH2))-127)<=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN; }
+      else if((((READ_CH1)+(READ_CH2))-127)>=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH2 = (((READ_CH1)+(READ_CH2))-127);
+    }    
+  }  
+  else 
+  {
+    RF_DATA_SEND.CH1 = READ_CH1;
+    RF_DATA_SEND.CH2 = READ_CH2;
+  }                           
 
   RF_DATA_SEND.CH3=F_SoftMap(&DATA_READ.CH3,\
                              Machine.CHANNEL.Channel_3.Limit.MIN,Machine.CHANNEL.Channel_3.Trim_Value, Machine.CHANNEL.Channel_3.Limit.MAX, \

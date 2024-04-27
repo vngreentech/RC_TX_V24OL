@@ -8,6 +8,26 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.5
+   * Date: 27,Apr,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * - Hoàn thiện menu Mix channel, fix cứng cho 2
+   * channel 1 và 2. Cho phép setup hành trình cho
+   * từng channel
+   * - Fix LỖI: tại màn hình chính nhấn nút OK để
+   * bắt đầu đồng hồ đếm ngược.
+   * 
+   * 
+  ************************************************/
+  #define FIRMWARE_VERSION ("V24OL.1.5")
+  #define RELEASES_DATE    ("27,Apr,2024")
+
+  /***********************************************
+   *    
    * Version: V24OL.1.4
    * Date: 25,Apr,2024
    * Dev: NhanNguyen
@@ -20,8 +40,8 @@
    * 
    * 
   ************************************************/
-  #define FIRMWARE_VERSION ("V24OL.1.4")
-  #define RELEASES_DATE    ("25,Apr,2024")
+  // #define FIRMWARE_VERSION ("V24OL.1.4")
+  // #define RELEASES_DATE    ("25,Apr,2024")
 
   /***********************************************
    *    

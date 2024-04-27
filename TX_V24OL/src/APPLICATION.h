@@ -165,7 +165,8 @@ typedef struct
   ChannelManage_typedef CHANNEL;
   uint8_t DUMMY_4[20];
   volatile uint16_t CRC_CheckSum;
-  uint8_t DUMMY_5[20];
+  uint8_t DUMMY_5[19];
+  volatile uint8_t CheckMixing;
 }ConfigMachine_typedef;
 
 typedef struct 

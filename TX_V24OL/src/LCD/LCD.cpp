@@ -641,6 +641,35 @@ static void MENU_SET_THR_LOCK(uint8_t Select)
   Display.display();  
 }
 
+static void MENU_MIX_CHANNEL(uint8_t OnOff, \
+                             volatile uint16_t CH1_TRIP_PERCENT, volatile uint16_t CH2_TRIP_PERCENT)
+{
+  char data[20];
+
+  Display.clearDisplay();
+  Display.setTextSize(1);
+
+  if(UpDown_Menu_V1==0)
+  {Display.setCursor(0, 20); Display.print(Pos_menu==Enter_1?"*":">");}
+  else if(UpDown_Menu_V1==1)
+  {Display.setCursor(0, 30); Display.print(Pos_menu==Enter_1?"*":">");}
+  else 
+  {Display.setCursor(0, 40); Display.print(Pos_menu==Enter_1?"*":">");}
+
+  Display.setCursor(20, 1); Display.print("CHANNEL MIXING");
+
+  Display.setCursor(0, 20); Display.print(OnOff==TRUE?" MIX: ON":" MIX: OFF");
+
+  sprintf(data," CH1:%d",(CH1_TRIP_PERCENT));
+  Display.setCursor(0, 30); Display.print(data);
+  Display.setCursor(50, 30); Display.print("%");
+  sprintf(data," CH2:%d",(CH2_TRIP_PERCENT));
+  Display.setCursor(0, 40); Display.print(data);
+  Display.setCursor(50, 40); Display.print("%");  
+
+  Display.display();  
+}
+
 static void MENU_DISPLAY(void)
 {
   Display.clearDisplay();
@@ -899,12 +928,15 @@ void LCD_MAIN(void)
     /* OK BUTTON */
     if( Read_Button_OK()==1 ) /* OK Press short */
     {
-      if( Machine.Second>0 or Machine.Minute>0 )
+      if( Start_CountDown==0 )
       {
-        BUZZER_ON; 
-        Check_CountDown(1);
-        Start_CountDown=1;       
-        delay(500) ;
+        if( Machine.Second>0 or Machine.Minute>0 )
+        {
+          BUZZER_ON; 
+          Check_CountDown(1);
+          Start_CountDown=1;       
+          delay(500) ;
+        }
       }
 
       RESULT_BUTTON_OK=0;
@@ -985,7 +1017,14 @@ void LCD_MAIN(void)
         }
         else if( MenuUPDOWN==MixChannel ) 
         {
-          FEATURE_IN_DEVELOPMENT();
+          memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+
+          MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
+                          _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT,\
+                          _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);  
+
+          UpDown_Menu_V1=0;
+          UpDown_Menu_V1_MAX=3;
         }
         else if( MenuUPDOWN==DisPlay ) 
         {
@@ -1065,6 +1104,12 @@ void LCD_MAIN(void)
     else if( MenuUPDOWN==SetTimeDown ) MENU_TIME_DOWN(&_Virtual_Machine_.Minute, &_Virtual_Machine_.Second);
     else if( MenuUPDOWN==SetThrottleLock ) MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock);
     else if( MenuUPDOWN==EndPoint ) MENU_END_POINT();
+    else if( MenuUPDOWN==MixChannel )
+    {
+      MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
+                      _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT,\
+                      _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);   
+    }
 
     if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
     {
@@ -1072,6 +1117,13 @@ void LCD_MAIN(void)
       if( Read_Button_OK()==1 ) /* OK Press short */
       {
         if( (MenuUPDOWN==SetPPM) || (MenuUPDOWN==EndPoint) ) Pos_menu+=1;
+        else if( MenuUPDOWN==MixChannel )
+        {
+          if(UpDown_Menu_V1==0)
+          {_Virtual_Machine_.CheckMixing = !_Virtual_Machine_.CheckMixing;}
+          else if( (UpDown_Menu_V1==1) or (UpDown_Menu_V1==2) )
+          { Pos_menu+=1; }
+        }
 
         RESULT_BUTTON_OK=0;
         RESULT_BUTTON_BACK=0;      
@@ -1134,7 +1186,7 @@ void LCD_MAIN(void)
           RF_DATA_SEND.Feature=Get_PPM;
           Pos_menu=Enter_2;
         }
-        else if( MenuUPDOWN==EndPoint )
+        else if( (MenuUPDOWN==EndPoint) || (MenuUPDOWN==MixChannel) )
         {
           auto Lambda = [](volatile uint8_t *TripPercent,volatile uint8_t *TripMin,volatile uint8_t *TripMax)
           {
@@ -1199,7 +1251,7 @@ void LCD_MAIN(void)
         {
           LED_ON;
           BUZZER_ON;
-          memcpy(&Machine,&_Virtual_Machine_,sizeof(_Virtual_Machine_));
+          memcpy(&Machine,&_Virtual_Machine_,sizeof(_Virtual_Machine_));       
           WRITE_CONFIG_MACHINE(&Machine);
           delay(1000);
           LED_OF;
@@ -1214,7 +1266,7 @@ void LCD_MAIN(void)
       } 
     }
   } /* Menu chuc nang */
-  else if(Pos_menu==Enter_1) /* Enter 1 */
+  else if(Pos_menu==Enter_1) /* Enter 1 */ 
   {
     if( MenuUPDOWN==SetPPM ) 
     {
@@ -1274,6 +1326,20 @@ void LCD_MAIN(void)
         RESULT_BUTTON_BACK=0;      
       }      
     }
+    else if( MenuUPDOWN==MixChannel )
+    {
+      MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
+                      _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT,\
+                      _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);                    
+
+      if( Read_Button_OK()==1 ) /* OK Press short */
+      {
+        Pos_menu-=1;
+
+        RESULT_BUTTON_OK=0;
+        RESULT_BUTTON_BACK=0;      
+      }      
+    }
 
   }
   else if(Pos_menu==Enter_2) /* Enter 2 */
@@ -1319,7 +1385,9 @@ void LCD_MAIN(void)
     }
     else if(Pos_menu==ChoiceMenuMain)
     {
-      if( (MenuUPDOWN==ChannelReserse) or (MenuUPDOWN==GetChannelLimit) )
+      if( (MenuUPDOWN==ChannelReserse) or\
+          (MenuUPDOWN==GetChannelLimit) or\
+          (MenuUPDOWN==MixChannel))
       {
         if(UpDown_Menu_V1<=0) UpDown_Menu_V1=UpDown_Menu_V1_MAX;
         else UpDown_Menu_V1-=1;
@@ -1415,7 +1483,25 @@ void LCD_MAIN(void)
         else if( UpDown_Menu_V1==8 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Limit.TRIP_PERCENT);
         else if( UpDown_Menu_V1==9 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Limit.TRIP_PERCENT);        
       }
-
+      else if( MenuUPDOWN==MixChannel )
+      {
+        if( UpDown_Menu_V1==1 )
+        {
+          if( _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT<100 )
+          {
+            _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT+=1;
+          }
+          else _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT=100;
+        }
+        else if( UpDown_Menu_V1==2 )
+        {
+          if( _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT<100 )
+          {
+            _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT+=1;
+          }
+          else _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT=100;
+        } else {;;}
+      }
     }
 
   } /* End of if( DATA_READ.BT_UP<=500 )  */
@@ -1434,7 +1520,9 @@ void LCD_MAIN(void)
       }
       else if(Pos_menu==ChoiceMenuMain)
       {
-        if( (MenuUPDOWN==ChannelReserse) or (MenuUPDOWN==GetChannelLimit) )
+        if( (MenuUPDOWN==ChannelReserse) or \
+            (MenuUPDOWN==GetChannelLimit) or \
+            (MenuUPDOWN==MixChannel))
         {
           if(UpDown_Menu_V1>=UpDown_Menu_V1_MAX) UpDown_Menu_V1=0;
           else UpDown_Menu_V1+=1;
@@ -1531,8 +1619,27 @@ void LCD_MAIN(void)
           else if( UpDown_Menu_V1==8 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Limit.TRIP_PERCENT);
           else if( UpDown_Menu_V1==9 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Limit.TRIP_PERCENT);                
         }
-
+        else if( MenuUPDOWN==MixChannel )
+        {
+          if( UpDown_Menu_V1==1 )
+          {
+            if( _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT>0 )
+            {
+              _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT-=1;
+            }
+            else _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT=0;
+          }
+          else if( UpDown_Menu_V1==2 )
+          {
+            if( _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT>0 )
+            {
+              _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT-=1;
+            }
+            else _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT=0;
+          } else {;;}
+        }
       }   
+      
     }
 
   }/* Eend of if( DATA_READ.BT_DOWN<=500 ) */
