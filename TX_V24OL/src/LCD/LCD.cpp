@@ -1292,7 +1292,13 @@ void LCD_MAIN(void)
           if(Pos_menu<=0) Pos_menu=0;
           else Pos_menu-=1;                
         }
-        else 
+        else if((MenuUPDOWN==ChannelReserse) ||\
+                (MenuUPDOWN==SetThrottleLock) ||\
+                (MenuUPDOWN==GetChannelLimit) ||\
+                (MenuUPDOWN==SetTimeDown) ||\
+                (MenuUPDOWN==SetTXBattery) ||\
+                (MenuUPDOWN==SetRXBattery)
+               )
         {
           LED_ON;
           BUZZER_ON;
@@ -1304,6 +1310,11 @@ void LCD_MAIN(void)
 
           if(Pos_menu<=0) Pos_menu=0;
           else Pos_menu-=1;      
+        }
+        else /* Back to Menu */
+        {
+          if(Pos_menu<=0) Pos_menu=0;
+          else Pos_menu-=1;
         }
 
         RESULT_BUTTON_OK=0;

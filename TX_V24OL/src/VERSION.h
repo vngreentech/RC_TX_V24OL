@@ -8,6 +8,27 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.7
+   * Date: 28,Apr,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * 
+   * - Fix LỖI: Nhấn giữ nút cancel để lưu các thay 
+   * đổi, 1 vài menu không được dùng tính năng này.
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.7")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("28,Apr,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.6
    * Date: 28,Apr,2024
    * Dev: NhanNguyen
@@ -26,8 +47,12 @@
    * 
    * 
   ************************************************/
-  #define FIRMWARE_VERSION ("V24OL.1.6")
-  #define RELEASES_DATE    ("28,Apr,2024")
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.6")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("28,Apr,2024")
+  #endif /* RELEASES_DATE */
 
   /***********************************************
    *    
@@ -46,8 +71,12 @@
    * 
    * 
   ************************************************/
-  // #define FIRMWARE_VERSION ("V24OL.1.5")
-  // #define RELEASES_DATE    ("27,Apr,2024")
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.5")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("27,Apr,2024")
+  #endif /* RELEASES_DATE */
 
   /***********************************************
    *    
@@ -63,8 +92,12 @@
    * 
    * 
   ************************************************/
-  // #define FIRMWARE_VERSION ("V24OL.1.4")
-  // #define RELEASES_DATE    ("25,Apr,2024")
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.4")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("25,Apr,2024")
+  #endif /* RELEASES_DATE */
 
   /***********************************************
    *    
@@ -94,8 +127,12 @@
    * 
    * 
   ************************************************/
-  // #define FIRMWARE_VERSION ("V24OL.1.3")
-  // #define RELEASES_DATE    ("23,Apr,2024")
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.3")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("23,Apr,2024")
+  #endif /* RELEASES_DATE */
 
   /***********************************************
    *    
@@ -134,8 +171,12 @@
    * 
    * 
   ************************************************/
-  // #define FIRMWARE_VERSION ("V24OL.1.2")
-  // #define RELEASES_DATE    ("03,Apr,2024")
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.2")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("03,Apr,2024")
+  #endif /* RELEASES_DATE */
 
 /*==============================================*/
 
