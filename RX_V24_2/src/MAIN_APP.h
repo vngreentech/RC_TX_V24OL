@@ -92,29 +92,7 @@ typedef struct
   volatile uint8_t RF_Channel;
   volatile uint8_t RF_Next_Channel;  
   volatile uint8_t Check_Save_RX_INFO;
-  uint8_t dummy;
-
-  volatile uint16_t CH1_PPM_Min;
-  volatile uint16_t CH1_PPM_Max;
-  volatile uint16_t CH2_PPM_Min;
-  volatile uint16_t CH2_PPM_Max;
-  volatile uint16_t CH3_PPM_Min;
-  volatile uint16_t CH3_PPM_Max;
-  volatile uint16_t CH4_PPM_Min;
-  volatile uint16_t CH4_PPM_Max;
-  volatile uint16_t CH5_PPM_Min;
-  volatile uint16_t CH5_PPM_Max;
-
-  volatile uint16_t CH6_PPM_Min;
-  volatile uint16_t CH6_PPM_Max;
-  volatile uint16_t CH7_PPM_Min;
-  volatile uint16_t CH7_PPM_Max;
-  volatile uint16_t CH8_PPM_Min;
-  volatile uint16_t CH8_PPM_Max;
-  volatile uint16_t CH9_PPM_Min;
-  volatile uint16_t CH9_PPM_Max;
-  volatile uint16_t CH10_PPM_Min;
-  volatile uint16_t CH10_PPM_Max;
+  uint8_t dummy[20];
 
 }Address_typedef;
 
@@ -145,7 +123,41 @@ typedef struct
   volatile uint8_t CH10_PPM_Min;
   volatile uint8_t CH10_PPM_Max;      
 
-}PPM_typedef;
+}PPM_READ_typedef;
+
+typedef struct 
+{
+  volatile uint16_t CH1_PPM_Min;
+  volatile uint16_t CH1_PPM_Max;
+  volatile uint16_t CH2_PPM_Min;
+  volatile uint16_t CH2_PPM_Max;
+  volatile uint16_t CH3_PPM_Min;
+  volatile uint16_t CH3_PPM_Max;
+  volatile uint16_t CH4_PPM_Min;
+  volatile uint16_t CH4_PPM_Max;
+  volatile uint16_t CH5_PPM_Min;
+  volatile uint16_t CH5_PPM_Max;
+
+  volatile uint16_t CH6_PPM_Min;
+  volatile uint16_t CH6_PPM_Max;
+  volatile uint16_t CH7_PPM_Min;
+  volatile uint16_t CH7_PPM_Max;
+  volatile uint16_t CH8_PPM_Min;
+  volatile uint16_t CH8_PPM_Max;
+  volatile uint16_t CH9_PPM_Min;
+  volatile uint16_t CH9_PPM_Max;
+  volatile uint16_t CH10_PPM_Min;
+  volatile uint16_t CH10_PPM_Max;      
+
+}PPM_SAVE_typedef;
+
+typedef struct
+{
+  volatile uint8_t Check_config;
+  Address_typedef ADDRESS;
+  PPM_SAVE_typedef PPM_CONFIG;
+}ConfigMachine_typedef;
+
 
 /*======================================================*/
 

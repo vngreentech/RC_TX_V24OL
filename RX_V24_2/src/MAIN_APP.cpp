@@ -6,9 +6,10 @@ char ID[20];
 uint32_t UID;
 uint16_t Vol_Sensor=0;
 static uint8_t Feature=Data_Control;
-static Address_typedef ADDRESS;
+static ConfigMachine_typedef CONFIG_MACHINE;
+static Address_typedef AddressRead;
 static ChannelData_Typedef DataRead;
-static PPM_typedef ReadPPM;
+
 Servo OUTCH1;
 Servo OUTCH2;
 Servo OUTCH3;
@@ -21,12 +22,35 @@ Servo OUTCH9;
 Servo OUTCH10;
 static uint8_t BIND=false;
 
-PPM_typedef PPM_Read;
-
 static void RESET_DEFAULT(void)
 {
-  memset(&ADDRESS,0,sizeof(ADDRESS));
-  EEPROM.put(0, ADDRESS);
+  memset(&CONFIG_MACHINE,0,sizeof(CONFIG_MACHINE));
+
+  CONFIG_MACHINE.PPM_CONFIG.CH1_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH1_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH2_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH2_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH3_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH3_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH4_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH4_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH5_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH5_PPM_Max = PPM_MAX;
+
+  CONFIG_MACHINE.PPM_CONFIG.CH6_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH6_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH7_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH7_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH8_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH8_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH9_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH9_PPM_Max = PPM_MAX;
+  CONFIG_MACHINE.PPM_CONFIG.CH10_PPM_Min = PPM_MIN;
+  CONFIG_MACHINE.PPM_CONFIG.CH10_PPM_Max = PPM_MAX;    
+
+  CONFIG_MACHINE.Check_config=113;
+
+  EEPROM.put(0, CONFIG_MACHINE);
 }
 
 static void LED_POWERON(void)
@@ -49,9 +73,9 @@ static void F_PrintDataRead(void)
   Serial.print(DataPrint);
 }
 
-static void F_SaveData(Address_typedef *AddressSave)
+static void F_SAVE_CONFIG_MACHINE(ConfigMachine_typedef *ConfigSave)
 {
-  EEPROM.put(0, *AddressSave);
+  EEPROM.put(0, *ConfigSave);
   delay(1);
 
   // char data[200];
@@ -61,9 +85,9 @@ static void F_SaveData(Address_typedef *AddressSave)
   // Serial.print(data);   
 }
 
-static void F_ReadData(Address_typedef *AddressRead)
+static void F_READ_CONFIG_MACHINE(ConfigMachine_typedef *ConfigRead)
 {
-  EEPROM.get(0, *AddressRead);
+  EEPROM.get(0, *ConfigRead);
   delay(1);
 
   // Serial.print("C: "); Serial.print(AddressRead->RF_Channel);
@@ -78,16 +102,16 @@ static void F_ReadData(Address_typedef *AddressRead)
 
 static void F_ServoInit(void)
 {
-  OUTCH1.attach(PinCH1,((int)ADDRESS.CH1_PPM_Min),((int)ADDRESS.CH1_PPM_Max));
-  OUTCH2.attach(PinCH2,((int)ADDRESS.CH2_PPM_Min),((int)ADDRESS.CH2_PPM_Max));
-  OUTCH3.attach(PinCH3,((int)ADDRESS.CH3_PPM_Min),((int)ADDRESS.CH3_PPM_Max));
-  OUTCH4.attach(PinCH4,((int)ADDRESS.CH4_PPM_Min),((int)ADDRESS.CH4_PPM_Max));
-  OUTCH5.attach(PinCH5,((int)ADDRESS.CH5_PPM_Min),((int)ADDRESS.CH5_PPM_Max));
-  OUTCH6.attach(PinCH6,((int)ADDRESS.CH6_PPM_Min),((int)ADDRESS.CH6_PPM_Max));
-  OUTCH7.attach(PinCH7,((int)ADDRESS.CH7_PPM_Min),((int)ADDRESS.CH7_PPM_Max));
-  OUTCH8.attach(PinCH8,((int)ADDRESS.CH8_PPM_Min),((int)ADDRESS.CH8_PPM_Max));
-  OUTCH9.attach(PinCH9,((int)ADDRESS.CH9_PPM_Min),((int)ADDRESS.CH9_PPM_Max));
-  OUTCH10.attach(PinCH10,((int)ADDRESS.CH10_PPM_Min),((int)ADDRESS.CH10_PPM_Max));
+  OUTCH1.attach(PinCH1,((int)CONFIG_MACHINE.PPM_CONFIG.CH1_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH1_PPM_Max));
+  OUTCH2.attach(PinCH2,((int)CONFIG_MACHINE.PPM_CONFIG.CH2_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH2_PPM_Max));
+  OUTCH3.attach(PinCH3,((int)CONFIG_MACHINE.PPM_CONFIG.CH3_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH3_PPM_Max));
+  OUTCH4.attach(PinCH4,((int)CONFIG_MACHINE.PPM_CONFIG.CH4_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH4_PPM_Max));
+  OUTCH5.attach(PinCH5,((int)CONFIG_MACHINE.PPM_CONFIG.CH5_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH5_PPM_Max));
+  OUTCH6.attach(PinCH6,((int)CONFIG_MACHINE.PPM_CONFIG.CH6_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH6_PPM_Max));
+  OUTCH7.attach(PinCH7,((int)CONFIG_MACHINE.PPM_CONFIG.CH7_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH7_PPM_Max));
+  OUTCH8.attach(PinCH8,((int)CONFIG_MACHINE.PPM_CONFIG.CH8_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH8_PPM_Max));
+  OUTCH9.attach(PinCH9,((int)CONFIG_MACHINE.PPM_CONFIG.CH9_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH9_PPM_Max));
+  OUTCH10.attach(PinCH10,((int)CONFIG_MACHINE.PPM_CONFIG.CH10_PPM_Min),((int)CONFIG_MACHINE.PPM_CONFIG.CH10_PPM_Max));
 
   // char data[100];
   // sprintf(data,"CH1_Min: %d - CH1_Max: %d - CH2_Min: %d - CH2_Max: %d\n",\
@@ -113,7 +137,7 @@ static void F_ControlServo(void)
 
 static void F_Set_PPM(void)
 {
-  static PPM_typedef PPM_Read;
+  static PPM_READ_typedef PPM_Read;
   static uint8_t step=0;
   static uint32_t Tick_time=0;
 
@@ -153,29 +177,29 @@ static void F_Set_PPM(void)
   }
   else if( Feature==Save_PPM )
   {
-    ADDRESS.CH1_PPM_Min = map(PPM_Read.CH1_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH1_PPM_Max = map(PPM_Read.CH1_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH2_PPM_Min = map(PPM_Read.CH2_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH2_PPM_Max = map(PPM_Read.CH2_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH3_PPM_Min = map(PPM_Read.CH3_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH3_PPM_Max = map(PPM_Read.CH3_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH4_PPM_Min = map(PPM_Read.CH4_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH4_PPM_Max = map(PPM_Read.CH4_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH5_PPM_Min = map(PPM_Read.CH5_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH5_PPM_Max = map(PPM_Read.CH5_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH1_PPM_Min = map(PPM_Read.CH1_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH1_PPM_Max = map(PPM_Read.CH1_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH2_PPM_Min = map(PPM_Read.CH2_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH2_PPM_Max = map(PPM_Read.CH2_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH3_PPM_Min = map(PPM_Read.CH3_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH3_PPM_Max = map(PPM_Read.CH3_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH4_PPM_Min = map(PPM_Read.CH4_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH4_PPM_Max = map(PPM_Read.CH4_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH5_PPM_Min = map(PPM_Read.CH5_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH5_PPM_Max = map(PPM_Read.CH5_PPM_Max,0,255,PPM_MIN,PPM_MAX);
 
-    ADDRESS.CH6_PPM_Min = map(PPM_Read.CH6_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH6_PPM_Max = map(PPM_Read.CH6_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH7_PPM_Min = map(PPM_Read.CH7_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH7_PPM_Max = map(PPM_Read.CH7_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH8_PPM_Min = map(PPM_Read.CH8_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH8_PPM_Max = map(PPM_Read.CH8_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH9_PPM_Min = map(PPM_Read.CH9_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH9_PPM_Max = map(PPM_Read.CH9_PPM_Max,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH10_PPM_Min = map(PPM_Read.CH10_PPM_Min,0,255,PPM_MIN,PPM_MAX);
-    ADDRESS.CH10_PPM_Max = map(PPM_Read.CH10_PPM_Max,0,255,PPM_MIN,PPM_MAX);    
+    CONFIG_MACHINE.PPM_CONFIG.CH6_PPM_Min = map(PPM_Read.CH6_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH6_PPM_Max = map(PPM_Read.CH6_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH7_PPM_Min = map(PPM_Read.CH7_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH7_PPM_Max = map(PPM_Read.CH7_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH8_PPM_Min = map(PPM_Read.CH8_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH8_PPM_Max = map(PPM_Read.CH8_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH9_PPM_Min = map(PPM_Read.CH9_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH9_PPM_Max = map(PPM_Read.CH9_PPM_Max,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH10_PPM_Min = map(PPM_Read.CH10_PPM_Min,0,255,PPM_MIN,PPM_MAX);
+    CONFIG_MACHINE.PPM_CONFIG.CH10_PPM_Max = map(PPM_Read.CH10_PPM_Max,0,255,PPM_MIN,PPM_MAX);    
 
-    F_SaveData(&ADDRESS);
+    F_SAVE_CONFIG_MACHINE(&CONFIG_MACHINE);
 
     F_ServoInit();
 
@@ -291,7 +315,13 @@ void APP_Init(void)
   pinMode(LED, OUTPUT);
 
   // RESET_DEFAULT();
-  F_ReadData(&ADDRESS);
+  F_READ_CONFIG_MACHINE(&CONFIG_MACHINE);
+
+  if( CONFIG_MACHINE.Check_config!=113 )
+  {
+    RESET_DEFAULT();
+  }
+
   F_ServoInit();
 
   while (!radio.begin()) {LED_ON;} 
@@ -311,9 +341,9 @@ void APP_Init(void)
   else 
   {
     radio.setAutoAck(true);
-    radio.openWritingPipe((uint64_t)ADDRESS.RF_Address_Read);
-    radio.openReadingPipe(1, (uint64_t)ADDRESS.RF_Address_Write);
-    radio.setChannel(ADDRESS.RF_Channel);
+    radio.openWritingPipe((uint64_t)CONFIG_MACHINE.ADDRESS.RF_Address_Read);
+    radio.openReadingPipe(1, (uint64_t)CONFIG_MACHINE.ADDRESS.RF_Address_Write);
+    radio.setChannel(CONFIG_MACHINE.ADDRESS.RF_Channel);
     radio.setPALevel(RF24_PA_MAX);                   
     radio.setDataRate(RF24_250KBPS); 
     radio.startListening();
@@ -354,23 +384,27 @@ void APP_Init(void)
             (INFO_READ.RF_Address_Write>0&&INFO_READ.RF_Address_Write<=65535) && \
             (INFO_READ.RX_INFO>=10000&&INFO_READ.RX_INFO<=99999))
         {
-          if( ADDRESS.Check_Save_RX_INFO==0 ) /* Neu chua co ma thi Lay ma dinh danh moi */
+          if( CONFIG_MACHINE.ADDRESS.Check_Save_RX_INFO==0 ) /* Neu chua co ma thi Lay ma dinh danh moi */
           {
             // Serial.println(" Luu ma dinh danh moi ");
-            ADDRESS.RX_INFO=INFO_READ.RX_INFO;
-            ADDRESS.Check_Save_RX_INFO=2;
+            CONFIG_MACHINE.ADDRESS.RX_INFO=INFO_READ.RX_INFO;
+            CONFIG_MACHINE.ADDRESS.Check_Save_RX_INFO=2;
           }
           else /* Da co am dinh danh */
           {
             // Serial.println(" Da co ma dinh danh ");
-            ADDRESS.Check_Save_RX_INFO=1;
+            CONFIG_MACHINE.ADDRESS.Check_Save_RX_INFO=1;
           } 
           
-          ADDRESS.RF_Channel=INFO_READ.RF_Channel;
-          ADDRESS.RF_Address_Read=INFO_READ.RF_Address_Read;
-          ADDRESS.RF_Address_Write=INFO_READ.RF_Address_Write;
+          AddressRead.RF_Channel=INFO_READ.RF_Channel;
+          AddressRead.RF_Address_Read=INFO_READ.RF_Address_Read;
+          AddressRead.RF_Address_Write=INFO_READ.RF_Address_Write;
 
-          F_SaveData(&ADDRESS);                    
+          CONFIG_MACHINE.ADDRESS.RF_Channel = AddressRead.RF_Channel;
+          CONFIG_MACHINE.ADDRESS.RF_Address_Read = AddressRead.RF_Address_Read;
+          CONFIG_MACHINE.ADDRESS.RF_Address_Write = AddressRead.RF_Address_Write;
+
+          F_SAVE_CONFIG_MACHINE(&CONFIG_MACHINE);                    
 
           // Serial.print("NC: "); Serial.print(ADDRESS.RF_Channel);
           // Serial.print(" - NR: "); Serial.print(ADDRESS.RF_Address_Read);
@@ -385,7 +419,7 @@ void APP_Init(void)
     {
       LED_ON;
       radio.stopListening();
-      radio.write(&ADDRESS, sizeof(ADDRESS)); 
+      radio.write(&AddressRead, sizeof(AddressRead)); 
 
       delay(5);
     }

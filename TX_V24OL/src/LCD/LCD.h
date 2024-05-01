@@ -3,6 +3,8 @@
 #define __LCD__
 
 #include "APPLICATION.h"
+#include "RF24.h"
+#include "Adafruit_SPIDevice.h"
 
 #define SCREEN_WIDTH  (128UL) // OLED display width, in pixels
 #define SCREEN_HEIGHT (64UL)  // OLED display height, in pixels

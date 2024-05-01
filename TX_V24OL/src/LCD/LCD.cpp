@@ -626,17 +626,40 @@ static void MENU_TIME_DOWN(uint8_t *Minute, uint8_t *Second)
   Display.display();  
 }
 
-static void MENU_SET_THR_LOCK(uint8_t Select)
+static void MENU_SET_THR_LOCK(uint8_t SelectSW, uint8_t SelectValue)
 {
+
+  /**
+   *      SW1   SW2   SW3   SW4
+   * Min  11    21    31    41
+   * 
+   * Mid  12    22    32    42
+   * 
+   * Max  13    23    33    43
+   * 
+  */
+
   Display.clearDisplay();
   Display.setTextSize(1);
 
   Display.setCursor(10, 5); Display.print("SET THROTTLE LOCK");
-  if(Select==0) {Display.setCursor(0, 30); Display.print("Select: NONE!");}
-  else if(Select==1) {Display.setCursor(0, 30); Display.print("Select: Swicth 1");}
-  else if(Select==2) {Display.setCursor(0, 30); Display.print("Select: Swicth 2");}
-  else if(Select==3) {Display.setCursor(0, 30); Display.print("Select: Swicth 3");}
-  else {Display.setCursor(0, 30); Display.print("Select: Swicth 4");}
+
+  if(UpDown_Menu_V1==0)
+  {Display.setCursor(0, 40); Display.print(Pos_menu==Enter_1?"*":">");}
+  else
+  {Display.setCursor(0, 50); Display.print(Pos_menu==Enter_1?"*":">");}
+
+  Display.setCursor(0, 25); Display.print("LOCK CH3-Throttle");
+
+  if(SelectSW==0) {Display.setCursor(0, 40); Display.print(" Select: NONE!");}
+  else if(SelectSW==1) {Display.setCursor(0, 40); Display.print(" Select: Swicth 1");}
+  else if(SelectSW==2) {Display.setCursor(0, 40); Display.print(" Select: Swicth 2");}
+  else if(SelectSW==3) {Display.setCursor(0, 40); Display.print(" Select: Swicth 3");}
+  else {Display.setCursor(0, 40); Display.print(" Select: Swicth 4");}
+
+  if(SelectValue==0) {Display.setCursor(0, 50); Display.print(" Lock Value: MIN");}
+  else if(SelectValue==1) {Display.setCursor(0, 50); Display.print(" Lock Value: MIDDLE");}
+  else {Display.setCursor(0, 50); Display.print(" Lock Value: MAX");} 
   
   Display.display();  
 }
@@ -1049,7 +1072,10 @@ void LCD_MAIN(void)
 
           case SetThrottleLock:
             memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
-            MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock);
+            MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock, _Virtual_Machine_.Throttle_Lock_Value);
+            
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=2;
             break;
 
           case SetTimeDown:
@@ -1147,7 +1173,7 @@ void LCD_MAIN(void)
         break;
 
       case SetThrottleLock:
-        MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock);
+        MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock, _Virtual_Machine_.Throttle_Lock_Value);
         break;
 
       case EndPoint:
@@ -1169,7 +1195,7 @@ void LCD_MAIN(void)
       /* Button OK */
       if( Read_Button_OK()==1 ) /* OK Press short */
       {
-        if( (MenuUPDOWN==SetPPM) || (MenuUPDOWN==EndPoint) ) Pos_menu+=1;
+        if( (MenuUPDOWN==SetPPM) || (MenuUPDOWN==EndPoint) || (MenuUPDOWN==SetThrottleLock) ) Pos_menu+=1;
         else if( MenuUPDOWN==MixChannel )
         {
           if(UpDown_Menu_V1==0)
@@ -1305,7 +1331,7 @@ void LCD_MAIN(void)
                 (MenuUPDOWN==GetChannelLimit) ||\
                 (MenuUPDOWN==SetTimeDown) ||\
                 (MenuUPDOWN==SetTXBattery) ||\
-                (MenuUPDOWN==SetRXBattery)
+                (MenuUPDOWN==SetRXBattery) 
                )
         {
           LED_ON;
@@ -1404,6 +1430,18 @@ void LCD_MAIN(void)
         RESULT_BUTTON_BACK=0;      
       }      
     }
+    else if( MenuUPDOWN==SetThrottleLock )
+    {
+      MENU_SET_THR_LOCK(_Virtual_Machine_.Throttle_Lock, _Virtual_Machine_.Throttle_Lock_Value);
+
+      if( Read_Button_OK()==1 ) /* OK Press short */
+      {
+        Pos_menu-=1;
+
+        RESULT_BUTTON_OK=0;
+        RESULT_BUTTON_BACK=0;      
+      }         
+    }
 
   }
   else if(Pos_menu==Enter_2) /* Enter 2 */
@@ -1451,7 +1489,8 @@ void LCD_MAIN(void)
     {
       if( (MenuUPDOWN==ChannelReserse) or\
           (MenuUPDOWN==GetChannelLimit) or\
-          (MenuUPDOWN==MixChannel))
+          (MenuUPDOWN==MixChannel) or\
+          (MenuUPDOWN==SetThrottleLock))
       {
         if(UpDown_Menu_V1<=0) UpDown_Menu_V1=UpDown_Menu_V1_MAX;
         else UpDown_Menu_V1-=1;
@@ -1485,11 +1524,6 @@ void LCD_MAIN(void)
             _Virtual_Machine_.Second+=1;
           }
         }
-      }
-      else if( MenuUPDOWN==SetThrottleLock )
-      {
-        if(_Virtual_Machine_.Throttle_Lock>=4) _Virtual_Machine_.Throttle_Lock=0;
-        else _Virtual_Machine_.Throttle_Lock+=1;
       }
       else if( MenuUPDOWN==EndPoint )
       {
@@ -1566,6 +1600,19 @@ void LCD_MAIN(void)
           else _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT=100;
         } else {;;}
       }
+      else if( MenuUPDOWN==SetThrottleLock )
+      {
+        if( UpDown_Menu_V1==0 )
+        {
+          if(_Virtual_Machine_.Throttle_Lock>=4) _Virtual_Machine_.Throttle_Lock=0;
+          else _Virtual_Machine_.Throttle_Lock+=1;
+        }
+        else
+        {
+          if(_Virtual_Machine_.Throttle_Lock_Value>=2) _Virtual_Machine_.Throttle_Lock_Value=0;
+          else _Virtual_Machine_.Throttle_Lock_Value+=1;
+        }
+      }
     }
 
   } /* End of if( DATA_READ.BT_UP<=500 )  */
@@ -1586,7 +1633,8 @@ void LCD_MAIN(void)
       {
         if( (MenuUPDOWN==ChannelReserse) or \
             (MenuUPDOWN==GetChannelLimit) or \
-            (MenuUPDOWN==MixChannel))
+            (MenuUPDOWN==MixChannel) or\
+            (MenuUPDOWN==SetThrottleLock))
         {
           if(UpDown_Menu_V1>=UpDown_Menu_V1_MAX) UpDown_Menu_V1=0;
           else UpDown_Menu_V1+=1;
@@ -1621,12 +1669,7 @@ void LCD_MAIN(void)
               _Virtual_Machine_.Second-=1;
             }
           }
-        }
-        else if( MenuUPDOWN==SetThrottleLock )
-        {
-          if(_Virtual_Machine_.Throttle_Lock<=0) _Virtual_Machine_.Throttle_Lock=4;
-          else _Virtual_Machine_.Throttle_Lock-=1;
-        }        
+        }       
         else if( MenuUPDOWN==EndPoint )
         {
           if(UpDown_Menu_V1>=UpDown_Menu_V1_MAX) UpDown_Menu_V1=0;
@@ -1702,6 +1745,19 @@ void LCD_MAIN(void)
             else _Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT=0;
           } else {;;}
         }
+        else if( MenuUPDOWN==SetThrottleLock )
+        {
+          if( UpDown_Menu_V1==0 )
+          {
+            if(_Virtual_Machine_.Throttle_Lock<=0) _Virtual_Machine_.Throttle_Lock=4;
+            else _Virtual_Machine_.Throttle_Lock-=1;
+          }
+          else 
+          {
+            if(_Virtual_Machine_.Throttle_Lock_Value<=0) _Virtual_Machine_.Throttle_Lock_Value=2;
+            else _Virtual_Machine_.Throttle_Lock_Value-=1;
+          }
+        } 
       }   
       
     }

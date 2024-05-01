@@ -1,5 +1,7 @@
 
 #include "EROM.h"
+#include "RF24.h"
+#include "Adafruit_SPIDevice.h"
 
 I2C_eeprom EER(EEPROM_ADDRESS, I2C_DEVICESIZE_24LC256, &Wire);
 

@@ -3,6 +3,8 @@
 #define __PERIPHERAL__
 
 #include "APPLICATION.h"
+#include "RF24.h"
+#include "Adafruit_SPIDevice.h"
 
 void PERIPHERAL_INIT(void);
 void PERIPHERAL_MAIN(void);

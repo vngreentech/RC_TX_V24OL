@@ -191,8 +191,8 @@ void APP_INIT(void)
   Wire.setClock(_I2C_SPEED_);
   Wire.begin();
 
-  PERIPHERAL_INIT();
   EEPROM_INIT();
+  PERIPHERAL_INIT();
   LCD_INIT();
 
   RF_INIT();

@@ -1,5 +1,7 @@
 
 #include "RF.h"
+#include "RF24.h"
+#include "Adafruit_SPIDevice.h"
 
 DataSendControl_typedef RF_DATA_SEND;
 uint16_t RF_ReadData;
@@ -40,7 +42,7 @@ void RF_BIND_MAIN(void)
     New_Add.TX_INFO = Machine.ADDRESS.TX_INFO;
     New_Add.RF_Address_Read = random(1000,65000);
     New_Add.RF_Address_Write = random(1000,65000);
-    New_Add.RF_Channel = random(90,123);
+    New_Add.RF_Channel = random(101,123);
 
     Tick_timeout=millis();
     Tick_action=millis();

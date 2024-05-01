@@ -1,5 +1,7 @@
 
 #include "PERIPHERAL.h"
+#include "RF24.h"
+#include "Adafruit_SPIDevice.h"
 
 static SimpleKalmanFilter KALMAN_CH1(2, 2, 0.1);
 static SimpleKalmanFilter KALMAN_CH2(2, 2, 0.1);
@@ -32,6 +34,8 @@ static void F_Read_Button(volatile uint8_t *DataRead, int F_ReadButton, \
 
   if( *DataRead==0 )
   {
+    BUZZER_ON;
+
     if( UpDown==false ) 
     {
       if( *StrimValue > (*LimitMin) ) *StrimValue-=30;
@@ -51,8 +55,11 @@ static uint8_t F_SoftMap(volatile uint16_t *ReadChannel, volatile uint16_t Limit
   uint16_t DataConvert=*ReadChannel;
   DataConvert = constrain(DataConvert, LimitMin, LimitMax);
 
-  if( DataConvert<=LimitMiddle ) DataConvert = map(DataConvert, LimitMin, LimitMiddle, *Trip_Min, 127);
-  else DataConvert = map(DataConvert, LimitMiddle, LimitMax, 128, *Trip_Max); 
+  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
+  {
+    if( DataConvert<=LimitMiddle ) DataConvert = map(DataConvert, LimitMin, LimitMiddle, *Trip_Min, 127);
+    else DataConvert = map(DataConvert, LimitMiddle, LimitMax, 128, *Trip_Max); 
+  }
 
   if( (*ConvertCheck)==true ) DataConvert = (uint8_t)(255-(uint8_t)DataConvert);
 
@@ -96,10 +103,13 @@ static void Read_Button_Strim(void)
 
 static void READ_ALL_DATA(void)
 {
-  DATA_READ.CH1 = _74HC4067_ReadPin(&_74HC4067_, CH1_AILE);
-  DATA_READ.CH1 = KALMAN_CH1.updateEstimate((float)DATA_READ.CH1);
-  DATA_READ.CH2 = _74HC4067_ReadPin(&_74HC4067_, CH2_ELE);
-  DATA_READ.CH2 = KALMAN_CH2.updateEstimate((float)DATA_READ.CH2);
+  if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
+  {
+    DATA_READ.CH1 = _74HC4067_ReadPin(&_74HC4067_, CH1_AILE);
+    DATA_READ.CH1 = KALMAN_CH1.updateEstimate((float)DATA_READ.CH1);
+    DATA_READ.CH2 = _74HC4067_ReadPin(&_74HC4067_, CH2_ELE);
+    DATA_READ.CH2 = KALMAN_CH2.updateEstimate((float)DATA_READ.CH2);
+  }
 
   if( Flag_Check_Throttle==true )
   {
@@ -108,35 +118,45 @@ static void READ_ALL_DATA(void)
   }
   else 
   {
-    if( Machine.CHANNEL.Channel_3.Reverse==TRUE )
+    if( Machine.Throttle_Lock_Value==0 )/*MIN*/
     {
       DATA_READ.CH3 = Machine.CHANNEL.Channel_3.Limit.MIN;
     }
-    else DATA_READ.CH3 = Machine.CHANNEL.Channel_3.Limit.MAX;
+    else if( Machine.Throttle_Lock_Value==1 )/*MIDDLE*/
+    {
+      DATA_READ.CH3 = Machine.CHANNEL.Channel_3.Limit.MIDDLE;
+    }
+    else /* MAX */
+    {
+      DATA_READ.CH3 = Machine.CHANNEL.Channel_3.Limit.MAX;
+    }
   }
 
   DATA_READ.CH4 = _74HC4067_ReadPin(&_74HC4067_, CH4_RUD);
   DATA_READ.CH4 = KALMAN_CH4.updateEstimate((float)DATA_READ.CH4);
 
-  DATA_READ.BienTro_1 = _74HC4067_ReadPin(&_74HC4067_, BIENTRO_1);
-  DATA_READ.BienTro_1 = KALMAN_BT1.updateEstimate((float)DATA_READ.BienTro_1);
-  DATA_READ.BienTro_2 = _74HC4067_ReadPin(&_74HC4067_, BIENTRO_2);
-  DATA_READ.BienTro_2 = KALMAN_BT2.updateEstimate((float)DATA_READ.BienTro_2);
-  DATA_READ.BienTro_3 = _74HC4067_ReadPin(&_74HC4067_, BIENTRO_3);
-  DATA_READ.BienTro_3 = KALMAN_BT3.updateEstimate((float)DATA_READ.BienTro_3);
+  if( strcmp((char*)Machine.CHANNEL.DUMMY_3,(char*)LGO_WEB)==0 )
+  {
+    DATA_READ.BienTro_1 = _74HC4067_ReadPin(&_74HC4067_, BIENTRO_1);
+    DATA_READ.BienTro_1 = KALMAN_BT1.updateEstimate((float)DATA_READ.BienTro_1);
+    DATA_READ.BienTro_2 = _74HC4067_ReadPin(&_74HC4067_, BIENTRO_2);
+    DATA_READ.BienTro_2 = KALMAN_BT2.updateEstimate((float)DATA_READ.BienTro_2);
+    DATA_READ.BienTro_3 = _74HC4067_ReadPin(&_74HC4067_, BIENTRO_3);
+    DATA_READ.BienTro_3 = KALMAN_BT3.updateEstimate((float)DATA_READ.BienTro_3);
 
-  DATA_READ.SW_3POS_1 = _74HC4067_ReadPin(&_74HC4067_, SW_3_POS_1);
-  DATA_READ.SW_3POS_1 = KALMAN_SW1.updateEstimate((float)DATA_READ.SW_3POS_1);
-  DATA_READ.SW_3POS_2 = _74HC4067_ReadPin(&_74HC4067_, SW_3_POS_2);
-  DATA_READ.SW_3POS_2 = KALMAN_SW2.updateEstimate((float)DATA_READ.SW_3POS_2);
+    DATA_READ.SW_3POS_1 = _74HC4067_ReadPin(&_74HC4067_, SW_3_POS_1);
+    DATA_READ.SW_3POS_1 = KALMAN_SW1.updateEstimate((float)DATA_READ.SW_3POS_1);
+    DATA_READ.SW_3POS_2 = _74HC4067_ReadPin(&_74HC4067_, SW_3_POS_2);
+    DATA_READ.SW_3POS_2 = KALMAN_SW2.updateEstimate((float)DATA_READ.SW_3POS_2);
 
-  DATA_READ.SWONOF_1 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_1);
-  DATA_READ.SWONOF_2 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_2);
-  DATA_READ.SWONOF_3 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_3);
-  DATA_READ.SWONOF_4 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_4);
-  DATA_READ.Sensor = _74HC4067_ReadPin(&_74HC4067_, VOL_SENSOR);
-  DATA_READ.BT_UP = _74HC4067_ReadPin(&_74HC4067_, BUTTON_UP);
-  DATA_READ.BT_DOWN = _74HC4067_ReadPin(&_74HC4067_, BUTTON_DOWN);
+    DATA_READ.SWONOF_1 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_1);
+    DATA_READ.SWONOF_2 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_2);
+    DATA_READ.SWONOF_3 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_3);
+    DATA_READ.SWONOF_4 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_4);
+    DATA_READ.Sensor = _74HC4067_ReadPin(&_74HC4067_, VOL_SENSOR);
+    DATA_READ.BT_UP = _74HC4067_ReadPin(&_74HC4067_, BUTTON_UP);
+    DATA_READ.BT_DOWN = _74HC4067_ReadPin(&_74HC4067_, BUTTON_DOWN);
+  }
  
   DATA_READ.BT_OK = digitalRead(BUTTON_OK);
   DATA_READ.BT_BACK = digitalRead(BUTTON_BACK);
@@ -226,6 +246,8 @@ static void Convert_RF_Data_Send(void)
     RF_DATA_SEND.CH2 = READ_CH2;
   }                           
 
+  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
+  {
   RF_DATA_SEND.CH3=F_SoftMap(&DATA_READ.CH3,\
                              Machine.CHANNEL.Channel_3.Limit.MIN,Machine.CHANNEL.Channel_3.Trim_Value, Machine.CHANNEL.Channel_3.Limit.MAX, \
                              &Machine.CHANNEL.Channel_3.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_3.Limit.TRIP_MAX, \
@@ -247,6 +269,7 @@ static void Convert_RF_Data_Send(void)
                           Machine.CHANNEL.Channel_6.Limit.TRIP_MIN,Machine.CHANNEL.Channel_6.Limit.TRIP_MAX);}
   else RF_DATA_SEND.CH6 = map(DATA_READ.BienTro_3,Machine.CHANNEL.Channel_6.Limit.MIN,Machine.CHANNEL.Channel_6.Limit.MAX,\
                           Machine.CHANNEL.Channel_6.Limit.TRIP_MAX,Machine.CHANNEL.Channel_6.Limit.TRIP_MIN);
+  }
 
   if( Machine.CHANNEL.Channel_7.Reverse==0 )
   {
@@ -351,8 +374,22 @@ static void Check_PIN_TXRX(void)
   if( (PIN_TX<=Machine.TX_PIN_LOW && PIN_TX>1) or \
       (PIN_RX<=Machine.RX_PIN_LOW && PIN_RX>1) )
   {
-    BUZZER_ON;
-    LED_ON;
+    if( (PIN_RX<=Machine.RX_PIN_LOW && PIN_RX>1) && (RF_Check_Connect==TRUE) )
+    {
+      BUZZER_ON;
+      LED_ON;
+    }
+    else 
+    {
+      BUZZER_OF;
+      LED_OF;
+    }
+
+    if( (PIN_TX<=Machine.TX_PIN_LOW && PIN_TX>1) )
+    {
+      BUZZER_ON;
+      LED_ON;
+    }
   }
   else 
   {
@@ -391,16 +428,16 @@ static void Check_Throttle(void)
 
 float VoltageTX(void)
 {
-  float adc_voltage  = float((DATA_READ.Sensor * (VOL_INPUT_TX)) / 4095.0); 
-  float VOL = float(adc_voltage / (7500.0/(30000.0+7500.0))) ; 
+  float adc_voltage  = float( float(DATA_READ.Sensor * (VOL_INPUT_TX)) / 4095.0); 
+  float VOL = float( adc_voltage / float(7500.0/ float(30000.0+7500.0)) ) ; 
   
   return VOL;
 }
 
 float VoltageRX(void)
 {
-  float adc_voltage  = float((RF_ReadData * (VOL_INPUT_RX)) / 1024.0); 
-  float VOL = float(adc_voltage / (7500.0/(30000.0+7500.0))) ; 
+  float adc_voltage  = float( float(RF_ReadData * (VOL_INPUT_RX)) / 1024.0); 
+  float VOL = float( adc_voltage / float(7500.0/float(30000.0+7500.0)) ) ; 
   
   return VOL;
 }
@@ -486,10 +523,13 @@ void PERIPHERAL_INIT(void)
   pinMode(CH4_BT1,INPUT);
   pinMode(CH4_BT2,INPUT);
 
-  Timer_Read_Data.pause();
-  Timer_Read_Data.setOverflow((1000*10), MICROSEC_FORMAT); /* 10ms */
-  Timer_Read_Data.attachInterrupt(Read_Data);
-  Timer_Read_Data.resume();    
+  if( strcmp((char*)Machine.CHANNEL.DUMMY_3,(char*)LGO_WEB)==0 )
+  {
+    Timer_Read_Data.pause();
+    Timer_Read_Data.setOverflow((1000*10), MICROSEC_FORMAT); /* 10ms */
+    Timer_Read_Data.attachInterrupt(Read_Data);
+    Timer_Read_Data.resume();    
+  }
 }
 
 void PERIPHERAL_MAIN(void)

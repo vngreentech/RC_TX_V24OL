@@ -3,6 +3,8 @@
 #define __RF__
 
 #include "APPLICATION.h"
+#include "RF24.h"
+#include "Adafruit_SPIDevice.h"
 
 extern uint8_t RF_RESULT_PPM; /* 1=OK, 2=TimeOut */
 extern uint16_t RF_ReadData;

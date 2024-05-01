@@ -67,6 +67,25 @@ typedef enum
   Switch_3Pos_1,
   Switch_3Pos_2,
 }SwitchAndPoten_enum;
+
+typedef enum 
+{
+  SW1_MIN,
+  SW1_MID,
+  SW1_MAX,
+  
+  SW2_MIN,
+  SW2_MID,
+  SW2_MAX,
+  
+  SW3_MIN,
+  SW3_MID,
+  SW3_MAX,
+
+  SW4_MIN,
+  SW4_MID,
+  SW4_MAX,
+}MenuSetLockThrottle;
 /*=========================================*/
 
 /*==========================================
@@ -165,8 +184,9 @@ typedef struct
   ChannelManage_typedef CHANNEL;
   uint8_t DUMMY_4[20];
   volatile uint16_t CRC_CheckSum;
-  uint8_t DUMMY_5[19];
+  uint8_t DUMMY_5[18];
   volatile uint8_t CheckMixing;
+  volatile uint8_t Throttle_Lock_Value;
 }ConfigMachine_typedef;
 
 typedef struct 

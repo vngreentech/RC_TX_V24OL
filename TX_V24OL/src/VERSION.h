@@ -8,6 +8,44 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.9
+   * Date: 1,May,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * 
+   * - Update tính năng map tần số của tính năng Bind RX
+   * chỉ ưu tiên các tần số hoạt động ổn định, ít nhiễu
+   * trong điều kiện môi trường bình thường
+   * 
+   * - Update Version mới cho Firmware RX V24.2 . Design
+   * lại các structure tối ưu hơn.
+   * 
+   * - Update Menu set Throttle Lock cho phép set
+   * value của CH3 khi Lock: Min, Middle, Max
+   * 
+   * - Thêm tiếng còi cho các nút Trim của 4 channel
+   * chính
+   * 
+   * - Fix LỖI: 
+   *  1. Khi Pin RX xuống dưới mức setup mà tx 
+   * và rx mất kết nối thì còi không được hú
+   *  2. Fix lỗi ép kiểu của api convert voltage 
+   * TX và RX
+   * 
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.9")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("1,May,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.8
    * Date: 29,Apr,2024
    * Dev: NhanNguyen
