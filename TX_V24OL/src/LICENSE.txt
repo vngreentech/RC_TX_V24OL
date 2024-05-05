@@ -1,0 +1,34 @@
+
+************* LICENSE ***************
+
+TUYÊN BỐ VỀ QUYỀN TÁC GIẢ VÀ QUYỀN TỪ CHỐI TRÁCH NHIỆM CỦA TÁC GIẢ
+
+- Tác giả: Nguyễn Trọng Nhân (NhanNguyen)
+- Chức vụ (quyền hạng): Founder, Curator, quản lý của kênh Youtube Green Technology và website: www.vngreentech.com
+
+Youtube: https://www.youtube.com/c/GreenTechnology_GreenGroup
+Website: website: www.vngreentech.com
+
+Là tác giả, lập trình viên chính của dự án chế tạo bộ điều khiển từ xa. Các phiên bản phần mềm lưu trên Github: https://github.com/vngreentech
+
+Trong License này ghi rất rõ các điều khoản bắt buộc phải tuân theo dành cho người sử dụng các phần mềm của tác giả.
+
+Các điều khoản như sau:
+
+1. Cho phép người dùng (là cá nhân, tập thể, công ty, doanh nghiệp,... Sau đây gọi tắc là người dùng) sử dụng các phần mềm cho các dự
+án học tập, nghiên cứu, nhưng KHÔNG được sử dụng cho mục đích thương mại. Nếu người dùng muốn thương mại hoá sản phẩm, sản xuất số lượng lớn, 
+kinh doanh, buôn bán thì phải được sự đồng ý của tác giả, giữa các bên phải có sự thoả thuận và cam kết bằng giấy tờ. Nếu vi phạm người dùng 
+sẽ phải chấp nhận mọi trách nhiệm, lỗi sai và phải chấp nhận mọi yêu cầu đền bù từ tác giả.
+
+2. Người dùng phải giữ nguyên thông báo bản quyền và giấy phép trong toàn dòng đời sản phẩm.
+
+3. Tác giả tuyên bố miễn trừ trách nhiệm, không đưa ra bất kỳ bảo đảm nào về phần mềm, sản phẩm. Từ chối mọi trách nhiệm cho bất kỳ tổn
+thất hoặc thiệt hại nào phát sinh từ việc sử dụng phần mềm, sản phẩm này. Từ chối mọi trách nhiệm liên quan nếu người dùng sử dụng phần 
+mềm hoặc sản phẩm này cho các dự án, công việc, hành động sai pháp luật, phạm pháp.
+
+Bằng cách tải phần mềm, tải Firmware, tải dự án về hoặc copy, sao chép source code của phần mềm, dự án là bạn đã xác nhận hoàn toàn đồng
+ý với các điều khoản trong License này. Bạn xác nhận nếu vi phạm sẽ chịu toàn bộ trách nhiệm.
+
+Tác giả
+
+NGUYỄN TRỌNG NHÂN
