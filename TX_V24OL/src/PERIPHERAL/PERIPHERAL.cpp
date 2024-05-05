@@ -34,19 +34,19 @@ static void F_Read_Button(volatile uint8_t *DataRead, int F_ReadButton, \
 
   if( *DataRead==0 )
   {
-    if( UpDown==false ) 
+    if( strcmp((char*)Machine.CHANNEL.DUMMY_3,(char*)LGO_WEB)==0 )
     {
-      if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
+      if( UpDown==false ) 
       {
-      if( *StrimValue > (*LimitMin) ) *StrimValue-=30;
-      else *StrimValue = (*LimitMin);
+        if( *StrimValue > (*LimitMin) ) *StrimValue-=30;
+        else *StrimValue = (*LimitMin);
       }
-    }
-    else
-    {
-      if( *StrimValue < (*LimitMax) ) *StrimValue+=30;
-      else *StrimValue = (*LimitMax);
-    }    
+      else
+      {
+        if( *StrimValue < (*LimitMax) ) *StrimValue+=30;
+        else *StrimValue = (*LimitMax);
+      }   
+    } 
   }
 }
 
@@ -56,10 +56,10 @@ static uint8_t F_SoftMap(volatile uint16_t *ReadChannel, volatile uint16_t Limit
   uint16_t DataConvert=*ReadChannel;
   DataConvert = constrain(DataConvert, LimitMin, LimitMax);
 
-  if( strcmp((char*)Machine.DUMMY_1,(char*)LGO_GREEN)==0 )
+  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
   {
-  if( DataConvert<=LimitMiddle ) DataConvert = map(DataConvert, LimitMin, LimitMiddle, *Trip_Min, 127);
-  else DataConvert = map(DataConvert, LimitMiddle, LimitMax, 128, *Trip_Max); 
+    if( DataConvert<=LimitMiddle ) DataConvert = map(DataConvert, LimitMin, LimitMiddle, *Trip_Min, 127);
+    else DataConvert = map(DataConvert, LimitMiddle, LimitMax, 128, *Trip_Max); 
   }
 
   if( (*ConvertCheck)==true ) DataConvert = (uint8_t)(255-(uint8_t)DataConvert);
@@ -74,7 +74,7 @@ static void Read_Button_Strim(void)
   F_Read_Button(&DATA_READ.CH1_Strim_2, digitalRead(CH1_BT2), &Machine.CHANNEL.Channel_1.Limit.MIN, \
                 &Machine.CHANNEL.Channel_1.Limit.MAX, &NewChannelConfig.Channel_1.Trim_Value, true);  /* CH1 + */
 
-  if( strcmp((char*)Machine.CHANNEL.DUMMY_3,(char*)LGO_WEB)==0 )
+  if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
   {
   F_Read_Button(&DATA_READ.CH2_Strim_1, digitalRead(CH2_BT1), &Machine.CHANNEL.Channel_2.Limit.MIN, \
                 &Machine.CHANNEL.Channel_2.Limit.MAX, &NewChannelConfig.Channel_2.Trim_Value, false); /* CH2 - */
@@ -107,13 +107,10 @@ static void Read_Button_Strim(void)
 
 static void READ_ALL_DATA(void)
 {
-  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
-  {
   DATA_READ.CH1 = _74HC4067_ReadPin(&_74HC4067_, CH1_AILE);
   DATA_READ.CH1 = KALMAN_CH1.updateEstimate((float)DATA_READ.CH1);
   DATA_READ.CH2 = _74HC4067_ReadPin(&_74HC4067_, CH2_ELE);
   DATA_READ.CH2 = KALMAN_CH2.updateEstimate((float)DATA_READ.CH2);
-  }
 
   if( Flag_Check_Throttle==true )
   {
@@ -140,7 +137,7 @@ static void READ_ALL_DATA(void)
   DATA_READ.SW_3POS_2 = _74HC4067_ReadPin(&_74HC4067_, SW_3_POS_2);
   DATA_READ.SW_3POS_2 = KALMAN_SW2.updateEstimate((float)DATA_READ.SW_3POS_2);
 
-  if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
+  if( strcmp((char*)Machine.CHANNEL.DUMMY_3,(char*)LGO_WEB)==0 )
   {
   DATA_READ.SWONOF_1 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_1);
   DATA_READ.SWONOF_2 = _74HC4067_ReadPin(&_74HC4067_, SW_ONOF_2);
@@ -185,16 +182,62 @@ static void READ_ALL_DATA(void)
 
 static void Convert_RF_Data_Send(void)
 {
-  RF_DATA_SEND.CH1=F_SoftMap(&DATA_READ.CH1,\
-                             Machine.CHANNEL.Channel_1.Limit.MIN,Machine.CHANNEL.Channel_1.Trim_Value, Machine.CHANNEL.Channel_1.Limit.MAX, \
-                             &Machine.CHANNEL.Channel_1.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_1.Limit.TRIP_MAX, \
-                             &Machine.CHANNEL.Channel_1.Reverse);
+  static uint8_t READ_CH1, READ_CH2;
 
-  RF_DATA_SEND.CH2=F_SoftMap(&DATA_READ.CH2,\
-                             Machine.CHANNEL.Channel_2.Limit.MIN,Machine.CHANNEL.Channel_2.Trim_Value, Machine.CHANNEL.Channel_2.Limit.MAX, \
-                             &Machine.CHANNEL.Channel_2.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_2.Limit.TRIP_MAX, \
-                             &Machine.CHANNEL.Channel_2.Reverse);
+  READ_CH1=F_SoftMap(&DATA_READ.CH1,\
+                      Machine.CHANNEL.Channel_1.Limit.MIN,Machine.CHANNEL.Channel_1.Trim_Value, Machine.CHANNEL.Channel_1.Limit.MAX, \
+                      &Machine.CHANNEL.Channel_1.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_1.Limit.TRIP_MAX, \
+                      &Machine.CHANNEL.Channel_1.Reverse);
 
+  READ_CH2=F_SoftMap(&DATA_READ.CH2,\
+                      Machine.CHANNEL.Channel_2.Limit.MIN,Machine.CHANNEL.Channel_2.Trim_Value, Machine.CHANNEL.Channel_2.Limit.MAX, \
+                      &Machine.CHANNEL.Channel_2.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_2.Limit.TRIP_MAX, \
+                      &Machine.CHANNEL.Channel_2.Reverse);
+
+  if( Machine.CheckMixing==TRUE )
+  {
+    if( READ_CH2<(Machine.CHANNEL.Channel_2.Limit.MIDDLE) )
+    {    
+      if( ( ((READ_CH1)-(READ_CH2))+127 )<=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN; }
+      else if( ( ((READ_CH1)-(READ_CH2))+127 )>=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH1 = ((READ_CH1)-(READ_CH2))+127;
+
+      if( ( ((READ_CH1)+(READ_CH2))-127 )<=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN ) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN; }
+      else if(( ((READ_CH1)+(READ_CH2))-127 )>=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH2 = ( ((READ_CH1)+(READ_CH2))-127 );
+    }
+
+    if( READ_CH2>(Machine.CHANNEL.Channel_2.Limit.MIDDLE) )
+    {
+      READ_CH1 = map(READ_CH1,\
+                      Machine.CHANNEL.Channel_1.Limit.TRIP_MIN, Machine.CHANNEL.Channel_1.Limit.TRIP_MAX,\
+                      Machine.CHANNEL.Channel_1.Limit.TRIP_MAX, Machine.CHANNEL.Channel_1.Limit.TRIP_MIN);          
+
+      if( ( ((READ_CH1)-(READ_CH2))+127 )<=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MIN; }
+      else if( ( ((READ_CH1)-(READ_CH2))+127 )>=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX ) 
+      { RF_DATA_SEND.CH1=Machine.CHANNEL.Channel_1.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH1 = (((READ_CH1)-(READ_CH2))+127);
+
+      if((((READ_CH1)+(READ_CH2))-127)<=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MIN; }
+      else if((((READ_CH1)+(READ_CH2))-127)>=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX) 
+      { RF_DATA_SEND.CH2=Machine.CHANNEL.Channel_2.Limit.TRIP_MAX; }
+      else RF_DATA_SEND.CH2 = (((READ_CH1)+(READ_CH2))-127);
+    }    
+  }  
+  else 
+  {
+    RF_DATA_SEND.CH1 = READ_CH1;
+    RF_DATA_SEND.CH2 = READ_CH2;
+  }                           
+
+  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
+  {
   RF_DATA_SEND.CH3=F_SoftMap(&DATA_READ.CH3,\
                              Machine.CHANNEL.Channel_3.Limit.MIN,Machine.CHANNEL.Channel_3.Trim_Value, Machine.CHANNEL.Channel_3.Limit.MAX, \
                              &Machine.CHANNEL.Channel_3.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_3.Limit.TRIP_MAX, \
@@ -205,8 +248,6 @@ static void Convert_RF_Data_Send(void)
                              &Machine.CHANNEL.Channel_4.Limit.TRIP_MIN,&Machine.CHANNEL.Channel_4.Limit.TRIP_MAX, \
                              &Machine.CHANNEL.Channel_4.Reverse);     
 
-  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
-  {
   if( Machine.CHANNEL.Channel_5.Reverse==0 )
   {RF_DATA_SEND.CH5 = map(DATA_READ.BienTro_1,Machine.CHANNEL.Channel_5.Limit.MIN,Machine.CHANNEL.Channel_5.Limit.MAX,\
                           Machine.CHANNEL.Channel_5.Limit.TRIP_MIN,Machine.CHANNEL.Channel_5.Limit.TRIP_MAX);}
@@ -458,13 +499,13 @@ void PERIPHERAL_INIT(void)
   pinMode(CH4_BT1,INPUT);
   pinMode(CH4_BT2,INPUT);
 
-  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
+  if( strcmp((char*)Machine.DUMMY_1,(char*)LGO_GREEN)==0 )
   {
   Timer_Read_Data.pause();
   Timer_Read_Data.setOverflow((1000*10), MICROSEC_FORMAT); /* 10ms */
   Timer_Read_Data.attachInterrupt(Read_Data);
-  Timer_Read_Data.resume();    
-  }
+  Timer_Read_Data.resume();  
+  }  
 }
 
 void PERIPHERAL_MAIN(void)

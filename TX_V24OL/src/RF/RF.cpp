@@ -35,7 +35,7 @@ void RF_BIND_MAIN(void)
   {
     RF_INIT_BIND();
 
-    if( strcmp((char*)Machine.ADDRESS.DUMMY_2,(char*)LGO_TECH)==0 )
+    if( strcmp((char*)Machine.CHANNEL.DUMMY_3,(char*)LGO_WEB)==0 )
     {
     memset(&New_Add,0,sizeof(New_Add));
     memset(&Info_Read,0,sizeof(Info_Read));
@@ -68,9 +68,12 @@ void RF_BIND_MAIN(void)
       }
     }
     
+    if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
+    {
     Machine.ADDRESS.RF_Address_Read = New_Add.RF_Address_Read;
     Machine.ADDRESS.RF_Address_Write = New_Add.RF_Address_Write;
     Machine.ADDRESS.RF_Channel = New_Add.RF_Channel;
+    }
 
     WRITE_CONFIG_MACHINE(&Machine);
 
@@ -152,7 +155,7 @@ void RF_Send_PPM(void)
 
   if( Step==0 )
   {
-    if( strcmp((char*)Machine.DUMMY_1,(char*)LGO_GREEN)==0 )
+    if( strcmp((char*)Machine.ADDRESS.DUMMY_2,(char*)LGO_TECH)==0 )
     {
     memset( &DataRead,0,sizeof(DataRead) );
     memset( &PPM_Send,0,sizeof(PPM_Send) );
@@ -179,8 +182,8 @@ void RF_Send_PPM(void)
     PPM_Send.CH9_PPM_Min = map(_Virtual_Machine_.CHANNEL.Channel_9.PPM_Min,PPM_MIN,PPM_MAX,0,255);
     PPM_Send.CH9_PPM_Max = map(_Virtual_Machine_.CHANNEL.Channel_9.PPM_Max,PPM_MIN,PPM_MAX,0,255);
     PPM_Send.CH10_PPM_Min = map(_Virtual_Machine_.CHANNEL.Channel_10.PPM_Min,PPM_MIN,PPM_MAX,0,255);
-    PPM_Send.CH10_PPM_Max = map(_Virtual_Machine_.CHANNEL.Channel_10.PPM_Max,PPM_MIN,PPM_MAX,0,255);      
-    }
+    PPM_Send.CH10_PPM_Max = map(_Virtual_Machine_.CHANNEL.Channel_10.PPM_Max,PPM_MIN,PPM_MAX,0,255);     
+    } 
 
     RF_RESULT_PPM=0;
     TickTime=millis();
