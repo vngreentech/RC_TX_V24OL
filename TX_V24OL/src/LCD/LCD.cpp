@@ -747,10 +747,11 @@ static void MENU_SET_PIN_TX(void)
   Display.clearDisplay();
   Display.setTextSize(1);
 
-  Display.setCursor(0, 10); Display.print("TX:     V");
-  Display.setCursor(17, 10); Display.print(PIN_TX);
-  Display.setCursor(0, 30); Display.print("BATTERY LOW:      V");
-  Display.setCursor(75, 30); Display.print(_Virtual_Machine_.TX_PIN_LOW);
+  Display.setCursor(35, 2); Display.print("TX BATTERY");
+  Display.setCursor(0, 20); Display.print("TX:     V");
+  Display.setCursor(17, 20); Display.print(PIN_TX);
+  Display.setCursor(0, 40); Display.print("BATTERY LOW:      V");
+  Display.setCursor(75, 40); Display.print(_Virtual_Machine_.TX_PIN_LOW);
 
   Display.display();
 }
@@ -760,10 +761,11 @@ static void MENU_SET_PIN_RX(void)
   Display.clearDisplay();
   Display.setTextSize(1);
 
-  Display.setCursor(0, 10); Display.print("RX:     V");
-  Display.setCursor(17, 10); Display.print(PIN_RX);
-  Display.setCursor(0, 30); Display.print("BATTERY LOW:      V");
-  Display.setCursor(75, 30); Display.print(_Virtual_Machine_.RX_PIN_LOW);
+  Display.setCursor(35, 2); Display.print("RX BATTERY");
+  Display.setCursor(0, 20); Display.print("RX:     V");
+  Display.setCursor(17, 20); Display.print(PIN_RX);
+  Display.setCursor(0, 40); Display.print("BATTERY LOW:      V");
+  Display.setCursor(75, 40); Display.print(_Virtual_Machine_.RX_PIN_LOW);
 
   Display.display();
 }

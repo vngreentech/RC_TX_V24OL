@@ -8,6 +8,29 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.10
+   * Date: 11,May,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * - Design lại menu TX battery
+   * - Design lại menu RX Battery
+   * 
+   * - Fix LỖI: 
+   * 
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.10")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("11,May,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.9
    * Date: 1,May,2024
    * Dev: NhanNguyen
