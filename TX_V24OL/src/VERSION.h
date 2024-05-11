@@ -8,6 +8,31 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.11
+   * Date: 11,May,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * 
+   * - Fix LỖI: 
+   * Mất Info RX: Khi reset default TX thì khi bind
+   * lại RX mới bị lỗi không đọc được info rx, dù Rx đã
+   * có mã định danh
+   * #Lưu ý: Lỗi này được fix trên cả Firmware TX và
+   * RX, phải nạp cả 2 Firmware mới
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.11")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("11,May,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.10
    * Date: 11,May,2024
    * Dev: NhanNguyen

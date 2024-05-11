@@ -388,12 +388,14 @@ void APP_Init(void)
           {
             // Serial.println(" Luu ma dinh danh moi ");
             CONFIG_MACHINE.ADDRESS.RX_INFO=INFO_READ.RX_INFO;
-            CONFIG_MACHINE.ADDRESS.Check_Save_RX_INFO=2;
+            CONFIG_MACHINE.ADDRESS.Check_Save_RX_INFO=1;
+            AddressRead.Check_Save_RX_INFO=2;
           }
           else /* Da co am dinh danh */
           {
             // Serial.println(" Da co ma dinh danh ");
-            CONFIG_MACHINE.ADDRESS.Check_Save_RX_INFO=1;
+            AddressRead.RX_INFO = CONFIG_MACHINE.ADDRESS.RX_INFO;
+            AddressRead.Check_Save_RX_INFO=1;
           } 
           
           AddressRead.RF_Channel=INFO_READ.RF_Channel;
@@ -409,6 +411,7 @@ void APP_Init(void)
           // Serial.print("NC: "); Serial.print(ADDRESS.RF_Channel);
           // Serial.print(" - NR: "); Serial.print(ADDRESS.RF_Address_Read);
           // Serial.print(" - NW: "); Serial.print(ADDRESS.RF_Address_Write);
+          // Serial.print("C_Machine INFO: "); Serial.print(CONFIG_MACHINE.ADDRESS.RX_INFO);
           // Serial.print(" - RX_INFO: "); Serial.println(INFO_READ.RX_INFO);
 
           STEP=2;
