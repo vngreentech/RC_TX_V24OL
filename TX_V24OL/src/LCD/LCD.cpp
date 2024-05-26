@@ -8,7 +8,7 @@ static const String MENU[] = {
   " Channel Reverse",
   " End Point",
   " Get Channel Limit",
-  " Subtrims",
+  " Subtrim",
   " Set PPM",
   " Bind RX",
 
@@ -62,6 +62,8 @@ typedef enum
 Adafruit_SH1106G Display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 ConfigMachine_typedef _Virtual_Machine_;
+
+static uint8_t Virtual_Value_Percent[10];
 
 static uint32_t TickLCD=0;
 
@@ -434,6 +436,44 @@ static void MENU_END_POINT(void)
   Display.setCursor(65, 55); Display.print(data);
 
   Display.display();  
+}
+
+static void MENU_SUBTRIM(void)
+{
+  Display.clearDisplay();
+  Display.setTextSize(1);
+
+  if( strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN)==0 )
+  {if( UpDown_Menu_V1<5 ) { Display.setCursor( 0, ((UpDown_Menu_V1*10)+15) ); Display.print(Pos_menu==Enter_1?"*":">"); }
+  else { Display.setCursor( 65, (((UpDown_Menu_V1-5)*10)+15) ); Display.print(Pos_menu==Enter_1?"*":">"); }}
+
+  char data[20];
+
+  Display.setCursor(20, 1); Display.print("SUBTRIM VALUE");
+
+  sprintf(data," CH1:%d", map(_Virtual_Machine_.CHANNEL.Channel_1.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_1.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_1.Limit.MAX,0,100) );
+  Display.setCursor(0, 15); Display.print(data);
+  sprintf(data," CH2:%d",map(_Virtual_Machine_.CHANNEL.Channel_2.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_2.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_2.Limit.MAX,0,100));
+  Display.setCursor(0, 25); Display.print(data);
+  sprintf(data," CH3:%d",map(_Virtual_Machine_.CHANNEL.Channel_3.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_3.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_3.Limit.MAX,0,100));
+  Display.setCursor(0, 35); Display.print(data);
+  sprintf(data," CH4:%d",map(_Virtual_Machine_.CHANNEL.Channel_4.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_4.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_4.Limit.MAX,0,100));
+  Display.setCursor(0, 45); Display.print(data);
+  sprintf(data," CH5:%d",map(_Virtual_Machine_.CHANNEL.Channel_5.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_5.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_5.Limit.MAX,0,100));
+  Display.setCursor(0, 55); Display.print(data);
+
+  sprintf(data," CH6:%d",map(_Virtual_Machine_.CHANNEL.Channel_6.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_6.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_6.Limit.MAX,0,100));
+  Display.setCursor(65, 15); Display.print(data);
+  sprintf(data," CH7:%d",map(_Virtual_Machine_.CHANNEL.Channel_7.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_7.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_7.Limit.MAX,0,100));
+  Display.setCursor(65, 25); Display.print(data);
+  sprintf(data," CH8:%d",map(_Virtual_Machine_.CHANNEL.Channel_8.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_8.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_8.Limit.MAX,0,100));
+  Display.setCursor(65, 35); Display.print(data);
+  sprintf(data," CH9:%d",map(_Virtual_Machine_.CHANNEL.Channel_9.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_9.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_9.Limit.MAX,0,100));
+  Display.setCursor(65, 45); Display.print(data);
+  sprintf(data," CH10:%d",map(_Virtual_Machine_.CHANNEL.Channel_10.Trim_Value,_Virtual_Machine_.CHANNEL.Channel_10.Limit.MIN,_Virtual_Machine_.CHANNEL.Channel_10.Limit.MAX,0,100));
+  Display.setCursor(65, 55); Display.print(data);
+
+  Display.display();    
 }
 
 static void MENU_GET_CHANNEL_LIMIT(void)
@@ -1010,7 +1050,7 @@ void LCD_MAIN(void)
     Menu_MAIN();
       
     /*Button OK*/
-    if( (Read_Button_OK()==1)&&(strcmp((char*)Machine.DUMMY_4,(char*)LGO_MADEINVN )==0) ) /* OK Press short */
+    if( (Read_Button_OK()==1)&&(strcmp( (char*)Machine.DUMMY_4,(char*)LGO_MADEINVN )==0) ) /* OK Press short */
     {
       Pos_menu+=1;
 
@@ -1047,7 +1087,11 @@ void LCD_MAIN(void)
             break;
 
           case Subtrim:
-            FEATURE_IN_DEVELOPMENT();
+            memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));
+            MENU_SUBTRIM();
+
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=9;
             break;
 
           case SetPPM:
@@ -1191,6 +1235,10 @@ void LCD_MAIN(void)
         MENU_END_POINT();
         break; 
 
+      case Subtrim:
+        MENU_SUBTRIM();
+        break;         
+
       case MixChannel:
         MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
                       _Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT,\
@@ -1206,7 +1254,9 @@ void LCD_MAIN(void)
       /* Button OK */
       if( Read_Button_OK()==1 ) /* OK Press short */
       {
-        if( (MenuUPDOWN==SetPPM) || (MenuUPDOWN==EndPoint) || (MenuUPDOWN==SetThrottleLock) ) Pos_menu+=1;
+        if( (MenuUPDOWN==SetPPM) || (MenuUPDOWN==EndPoint) || \
+            (MenuUPDOWN==SetThrottleLock) || (MenuUPDOWN==Subtrim) ) 
+        {Pos_menu+=1;}
         else if( MenuUPDOWN==MixChannel )
         {
           if(UpDown_Menu_V1==0)
@@ -1338,6 +1388,22 @@ void LCD_MAIN(void)
           if(Pos_menu<=0) Pos_menu=0;
           else Pos_menu-=1;                
         }
+        else if( MenuUPDOWN==Subtrim )
+        {
+          if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
+          {
+            LED_ON;
+            BUZZER_ON;
+            SAVE_CONFIG();       
+            WRITE_CONFIG_MACHINE(&Machine);
+            delay(1000);
+            LED_OF;
+            BUZZER_OF;
+          }
+
+          if(Pos_menu<=0) Pos_menu=0;
+          else Pos_menu-=1;  
+        }
         else if((MenuUPDOWN==ChannelReserse) ||\
                 (MenuUPDOWN==SetThrottleLock) ||\
                 (MenuUPDOWN==GetChannelLimit) ||\
@@ -1429,6 +1495,18 @@ void LCD_MAIN(void)
         RESULT_BUTTON_BACK=0;      
       }      
     }
+    else if( MenuUPDOWN==Subtrim )
+    {
+      MENU_SUBTRIM();
+
+      if( Read_Button_OK()==1 ) /* OK Press short */
+      {
+        Pos_menu-=1;
+
+        RESULT_BUTTON_OK=0;
+        RESULT_BUTTON_BACK=0;      
+      }         
+    }
     else if( MenuUPDOWN==MixChannel )
     {
       MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
@@ -1503,7 +1581,10 @@ void LCD_MAIN(void)
       if( (MenuUPDOWN==ChannelReserse) or\
           (MenuUPDOWN==GetChannelLimit) or\
           (MenuUPDOWN==MixChannel) or\
-          (MenuUPDOWN==SetThrottleLock))
+          (MenuUPDOWN==SetThrottleLock) or\
+          (MenuUPDOWN==EndPoint) or\
+          (MenuUPDOWN==Subtrim)
+        )
       {
         if(UpDown_Menu_V1<=0) UpDown_Menu_V1=UpDown_Menu_V1_MAX;
         else UpDown_Menu_V1-=1;
@@ -1537,11 +1618,6 @@ void LCD_MAIN(void)
             _Virtual_Machine_.Second+=1;
           }
         }
-      }
-      else if( MenuUPDOWN==EndPoint )
-      {
-        if(UpDown_Menu_V1<=0) UpDown_Menu_V1=UpDown_Menu_V1_MAX;
-        else UpDown_Menu_V1-=1;
       }
     }
     else if(Pos_menu==Enter_1)
@@ -1583,16 +1659,89 @@ void LCD_MAIN(void)
           else *Input+=1;
         };
 
-        if( UpDown_Menu_V1==0 )Lambda(&_Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==1 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==2 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_3.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==3 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_4.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==4 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_5.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==5 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_6.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==6 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_7.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==7 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_8.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==8 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Limit.TRIP_PERCENT);
-        else if( UpDown_Menu_V1==9 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Limit.TRIP_PERCENT);        
+        if( (MenuUPDOWN==EndPoint) )
+        {
+          switch (UpDown_Menu_V1)
+          {
+            case 0:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT);
+              break;
+            case 1:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);
+              break;
+            case 2:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_3.Limit.TRIP_PERCENT);
+              break;
+            case 3:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_4.Limit.TRIP_PERCENT);
+              break;
+            case 4:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_5.Limit.TRIP_PERCENT);
+              break;
+            case 5:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_6.Limit.TRIP_PERCENT);
+              break;
+            case 6:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_7.Limit.TRIP_PERCENT);
+              break;
+            case 7:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_8.Limit.TRIP_PERCENT);
+              break;  
+            case 8:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Limit.TRIP_PERCENT);
+              break;
+            case 9:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Limit.TRIP_PERCENT);
+              break;                                   
+            default:
+              break;
+          }
+        }       
+    
+      }
+      else if( MenuUPDOWN==Subtrim )
+      {
+        auto Lambda = [](volatile uint16_t *SubtrimValue, volatile uint16_t *LimitMax)
+        {
+          if( (*SubtrimValue)>=(*LimitMax) ) *SubtrimValue=(*LimitMax);
+          else (*SubtrimValue)+=30;
+        };
+
+        switch (UpDown_Menu_V1)
+        {
+          case 0:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_1.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_1.Limit.MAX);
+            break;
+          case 1:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_2.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_2.Limit.MAX);
+            break;
+          case 2:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_3.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_3.Limit.MAX);
+            break;
+          case 3:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_4.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_4.Limit.MAX);
+            break;
+          case 4:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_5.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_5.Limit.MAX);
+            break;
+          case 5:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_6.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_6.Limit.MAX);
+            break;
+          case 6:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_7.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_7.Limit.MAX);
+            break;
+          case 7:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_8.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_8.Limit.MAX);
+            break;  
+          case 8:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_9.Limit.MAX);
+            break;
+          case 9:
+            Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_10.Limit.MAX);
+            break;                                   
+          default:
+            break;
+        }
       }
       else if( MenuUPDOWN==MixChannel )
       {
@@ -1647,7 +1796,10 @@ void LCD_MAIN(void)
         if( (MenuUPDOWN==ChannelReserse) or \
             (MenuUPDOWN==GetChannelLimit) or \
             (MenuUPDOWN==MixChannel) or\
-            (MenuUPDOWN==SetThrottleLock))
+            (MenuUPDOWN==SetThrottleLock) or\
+            (MenuUPDOWN==EndPoint) or\
+            (MenuUPDOWN==Subtrim)
+          )
         {
           if(UpDown_Menu_V1>=UpDown_Menu_V1_MAX) UpDown_Menu_V1=0;
           else UpDown_Menu_V1+=1;
@@ -1683,11 +1835,7 @@ void LCD_MAIN(void)
             }
           }
         }       
-        else if( MenuUPDOWN==EndPoint )
-        {
-          if(UpDown_Menu_V1>=UpDown_Menu_V1_MAX) UpDown_Menu_V1=0;
-          else UpDown_Menu_V1+=1;
-        }
+
       }   
       else if(Pos_menu==Enter_1)
       {
@@ -1728,16 +1876,89 @@ void LCD_MAIN(void)
             else *Input-=1;
           };        
 
-          if( UpDown_Menu_V1==0 )Lambda(&_Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==1 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==2 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_3.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==3 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_4.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==4 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_5.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==5 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_6.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==6 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_7.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==7 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_8.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==8 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Limit.TRIP_PERCENT);
-          else if( UpDown_Menu_V1==9 ) Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Limit.TRIP_PERCENT);                
+          if( (MenuUPDOWN==EndPoint) )
+          {
+            switch (UpDown_Menu_V1)
+            {
+              case 0:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_1.Limit.TRIP_PERCENT);
+                break;
+              case 1:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_2.Limit.TRIP_PERCENT);
+                break;
+              case 2:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_3.Limit.TRIP_PERCENT);
+                break;
+              case 3:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_4.Limit.TRIP_PERCENT);
+                break;
+              case 4:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_5.Limit.TRIP_PERCENT);
+                break;
+              case 5:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_6.Limit.TRIP_PERCENT);
+                break;
+              case 6:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_7.Limit.TRIP_PERCENT);
+                break;
+              case 7:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_8.Limit.TRIP_PERCENT);
+                break;  
+              case 8:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Limit.TRIP_PERCENT);
+                break;
+              case 9:
+                Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Limit.TRIP_PERCENT);
+                break;                                   
+              default:
+                break;
+            }
+          }              
+        
+        }
+        else if( MenuUPDOWN==Subtrim )
+        {
+          auto Lambda = [](volatile uint16_t *SubtrimValue, volatile uint16_t *LimitMin)
+          {
+            if( (*SubtrimValue)<=(*LimitMin) ) *SubtrimValue=(*LimitMin);
+            else (*SubtrimValue)-=30;
+          };
+
+          switch (UpDown_Menu_V1)
+          {
+            case 0:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_1.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_1.Limit.MIN);
+              break;
+            case 1:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_2.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_2.Limit.MIN);
+              break;
+            case 2:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_3.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_3.Limit.MIN);
+              break;
+            case 3:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_4.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_4.Limit.MIN);
+              break;
+            case 4:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_5.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_5.Limit.MIN);
+              break;
+            case 5:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_6.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_6.Limit.MIN);
+              break;
+            case 6:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_7.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_7.Limit.MIN);
+              break;
+            case 7:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_8.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_8.Limit.MIN);
+              break;  
+            case 8:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_9.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_9.Limit.MIN);
+              break;
+            case 9:
+              Lambda(&_Virtual_Machine_.CHANNEL.Channel_10.Trim_Value, &_Virtual_Machine_.CHANNEL.Channel_10.Limit.MIN);
+              break;                                   
+            default:
+              break;
+          }
         }
         else if( MenuUPDOWN==MixChannel )
         {

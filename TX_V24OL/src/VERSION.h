@@ -8,6 +8,29 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.12
+   * Date: 26,May,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * Hoàn thiện menu Subtrim, cho phép Subtrim cho
+   * tất cả 10 channel
+   * 
+   * - Fix LỖI: 
+   * 
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.12")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("26,May,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.11
    * Date: 11,May,2024
    * Dev: NhanNguyen
