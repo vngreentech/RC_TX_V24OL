@@ -264,6 +264,15 @@ void RF_INIT(void)
 void RF_MAIN(void)
 {
   static uint16_t READ_Vol_RX_Virtual;
+  static uint32_t Tick_Count_Connect=0;
+
+  if( (uint32_t)( millis()-Tick_Count_Connect )>=100 )
+  {
+    RF_DATA_SEND.Count_Connect += 1;
+    if( RF_DATA_SEND.Count_Connect >= 255 ) RF_DATA_SEND.Count_Connect=0;
+
+    Tick_Count_Connect = millis();
+  }
 
   if( Feature_send==Send_Data_Control )
   {

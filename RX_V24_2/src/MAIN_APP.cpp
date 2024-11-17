@@ -64,6 +64,20 @@ static void LED_POWERON(void)
   }
 }
 
+static void F_ResetDataControl(void)
+{
+  DataRead.CH1=0;
+  DataRead.CH2=0;
+  DataRead.CH3=0;
+  DataRead.CH4=0;
+  DataRead.CH5=0;
+  DataRead.CH6=0;
+  DataRead.CH7=0;
+  DataRead.CH8=0;
+  DataRead.CH9=0;
+  DataRead.CH10=0;
+}
+
 static void F_PrintDataRead(void)
 {
   char DataPrint[100];
@@ -230,7 +244,10 @@ static void F_RF_READ(void)
   static uint8_t step=0;
   static uint32_t Tick_1=0;
   static uint32_t Tick_senddata=0;
+  static uint32_t Tick_Disconnect=0;
   static ChannelData_Typedef DataRead_Virtual;
+
+  static uint8_t Last_Count_Connect=0;
 
   if( Feature==Data_Control )  
   {
@@ -279,12 +296,36 @@ static void F_RF_READ(void)
       }
     }
 
+    if( DataRead.Count_Connect > Last_Count_Connect )
+    {
+      Last_Count_Connect = DataRead.Count_Connect;
+
+      LED_OFF;
+      Tick_Disconnect=millis();
+    }
+    else if( DataRead.Count_Connect < Last_Count_Connect ) 
+    {
+      Last_Count_Connect = DataRead.Count_Connect;
+
+      LED_OFF;
+      Tick_Disconnect=millis();      
+    }    
+    else
+    {
+      if( (uint32_t)(millis() - Tick_Disconnect) >= 1000 )
+      {
+        F_ResetDataControl();
+        LED_ON;
+      }
+    }
+
     F_ControlServo();
   }
 
   F_Set_PPM();
 
-  // Serial.print("CH1: "); Serial.print(DataRead.CH1);
+  // Serial.print("Last Count connect: "); Serial.print(Last_Count_Connect);
+  // Serial.print(" - Count connect: "); Serial.print(DataRead.Count_Connect);
   // Serial.print(" - CH2: "); Serial.print(DataRead.CH2);
   // Serial.print(" - CH3: "); Serial.print(DataRead.CH3);
   // Serial.print(" - CH4: "); Serial.print(DataRead.CH4);
@@ -294,6 +335,8 @@ static void F_RF_READ(void)
   // Serial.print(" - CH8: "); Serial.print(DataRead.CH8);
   // Serial.print(" - CH9: "); Serial.print(DataRead.CH9);
   // Serial.print(" - CH10: "); Serial.println(DataRead.CH10);
+
+  // Serial.println();
 
 }
 

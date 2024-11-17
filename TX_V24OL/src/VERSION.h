@@ -8,6 +8,53 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.14
+   * Date: 17,Nov,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * Fix error when disconnect
+   * When disconnect with TX, led RX ON and all
+   * channel set to 0
+   * #NOTE: Firmware Update for TX and RX
+   * 
+   * - Fix LỖI: 
+   * 
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.14")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("17,Nov,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
+   * Version: V24OL.1.13
+   * Date: 15,Jun,2024
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * Fix power error for RX V24.2
+   * 
+   * - Fix LỖI: 
+   * 
+   * 
+  ************************************************/
+  #ifndef FIRMWARE_VERSION
+  #define FIRMWARE_VERSION      ("V24OL.1.13")
+  #endif /* FIRMWARE_VERSION */
+  #ifndef RELEASES_DATE
+  #define RELEASES_DATE         ("15,Jun,2024")
+  #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.12
    * Date: 26,May,2024
    * Dev: NhanNguyen

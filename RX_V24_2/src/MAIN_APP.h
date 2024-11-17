@@ -80,7 +80,8 @@ typedef struct ChannelData
   volatile uint8_t CH8;
   volatile uint8_t CH9;
   volatile uint8_t CH10;
-  uint8_t dummy;
+  volatile uint8_t Count_Connect;
+  volatile uint8_t dummy[3];
 }ChannelData_Typedef;
 
 typedef struct 
