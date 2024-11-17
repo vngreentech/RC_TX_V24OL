@@ -18,6 +18,7 @@
    * Fix error when disconnect
    * When disconnect with TX, led RX ON and all
    * channel set to 0
+   * 
    * #NOTE: Firmware Update for TX and RX
    * 
    * - Fix LỖI: 
