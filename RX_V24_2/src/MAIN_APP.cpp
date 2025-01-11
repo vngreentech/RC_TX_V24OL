@@ -258,7 +258,7 @@ static void F_RF_READ(void)
     }
     else if(step==1)
     {
-      if((uint32_t)(millis()-Tick_1)>=1000)
+      if((uint32_t)(millis()-Tick_1)>=3000)
       {
         Tick_senddata=millis();
         step=2;
@@ -268,8 +268,9 @@ static void F_RF_READ(void)
     {  
       radio.stopListening();
       radio.write(&Vol_Sensor, sizeof(Vol_Sensor));
+      delay(5);
 
-      if((uint32_t)(millis()-Tick_1)>=500)
+      if((uint32_t)(millis()-Tick_senddata)>=20)
       {
         step=0;
       }
@@ -337,6 +338,8 @@ static void F_RF_READ(void)
   // Serial.print(" - CH10: "); Serial.println(DataRead.CH10);
 
   // Serial.println();
+
+  delay(1);
 
 }
 
