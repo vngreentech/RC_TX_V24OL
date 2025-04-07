@@ -6,6 +6,13 @@
 #include <string.h>
 #include <Wire.h>
 #include <SPI.h>
+
+// #include "FreeRTOS.h"
+// #include "FreeRTOSConfig.h"
+// #include "task.h"
+// #include "queue.h"
+// #include "semphr.h"
+
 #include "Adafruit_GFX.h"
 #include "Adafruit_SH110X.h"
 #include "I2C_eeprom.h"
@@ -31,6 +38,13 @@
 /*=========================================*/
 
 /*==========================================
+          HARDWARE ABSTRACTION
+==========================================*/
+#define MILLIS (millis())
+#define MICROS (micros())
+/*=========================================*/
+
+/*==========================================
                 ENUMS
 ==========================================*/
 typedef enum
@@ -53,6 +67,14 @@ typedef enum
   Send_Data_Control,
   Send_PPM
 }SendFeature_enum;
+
+typedef enum 
+{
+  PPM_PWM,
+  IBUS,
+  SBUS,
+  FIBER_OPTIC
+}RX_Typedef;
 
 typedef enum
 {
@@ -179,7 +201,8 @@ typedef struct
   uint8_t Minute;
   uint8_t Second;
   uint8_t Throttle_Lock;
-  uint8_t DUMMY_1[20];
+  uint8_t Select_RX;
+  uint8_t DUMMY_1[19];
   Address_typedef ADDRESS;
   ChannelManage_typedef CHANNEL;
   uint8_t DUMMY_4[20];

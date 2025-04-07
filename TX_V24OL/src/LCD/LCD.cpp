@@ -20,7 +20,7 @@ static const String MENU[] = {
   " Set TX Battery",
 
   " Set RX Battery",
-  " Add Model",
+  " Select RX",
   " Select Model",
   " Delete Model",
   " Reset Default",
@@ -42,7 +42,7 @@ typedef enum
   SetTimeDown,
   SetTXBattery,
   SetRXBattery,
-  AddModel,
+  SelectRX,
   SelectModel,
   DeleteModel,
   ResetDefault,
@@ -161,7 +161,7 @@ static uint8_t ACTION_GET_LIMIT(uint8_t Channel)
 
   if(STEP_ACTION==0)
   {
-    tick_action=millis();
+    tick_action=MILLIS;
     STEP_ACTION=1;
   }
   else if(STEP_ACTION==1) /* Get MIN */
@@ -177,7 +177,7 @@ static uint8_t ACTION_GET_LIMIT(uint8_t Channel)
     else if(Channel==8) _Virtual_Machine_.CHANNEL.Channel_9.Limit.MIN = DATA_READ.SWONOF_1;
     else _Virtual_Machine_.CHANNEL.Channel_10.Limit.MIN = DATA_READ.SWONOF_4;
 
-    if( (uint32_t)(millis()-tick_action)>=5000 )
+    if( (uint32_t)(MILLIS-tick_action)>=5000 )
     {
       if( strcmp((char*)Machine.ADDRESS.DUMMY_2,(char*)LGO_TECH)==0 )
       {LED_ON;
@@ -186,7 +186,7 @@ static uint8_t ACTION_GET_LIMIT(uint8_t Channel)
       LED_OF;
       BUZZER_OF;
 
-      tick_action=millis();
+      tick_action=MILLIS;
       STEP_ACTION=2;}
     }
   }
@@ -203,7 +203,7 @@ static uint8_t ACTION_GET_LIMIT(uint8_t Channel)
     else if(Channel==8) _Virtual_Machine_.CHANNEL.Channel_9.Limit.MIDDLE = DATA_READ.SWONOF_1;
     else _Virtual_Machine_.CHANNEL.Channel_10.Limit.MIDDLE = DATA_READ.SWONOF_4;
 
-    if( (uint32_t)(millis()-tick_action)>=5000 )
+    if( (uint32_t)(MILLIS-tick_action)>=5000 )
     {
       LED_ON;
       BUZZER_ON;
@@ -211,7 +211,7 @@ static uint8_t ACTION_GET_LIMIT(uint8_t Channel)
       LED_OF;
       BUZZER_OF;
 
-      tick_action=millis();
+      tick_action=MILLIS;
       STEP_ACTION=3;
     }
   }
@@ -229,7 +229,7 @@ static uint8_t ACTION_GET_LIMIT(uint8_t Channel)
     else if(Channel==8) _Virtual_Machine_.CHANNEL.Channel_9.Limit.MAX = DATA_READ.SWONOF_1;
     else _Virtual_Machine_.CHANNEL.Channel_10.Limit.MAX = DATA_READ.SWONOF_4;}
 
-    if( (uint32_t)(millis()-tick_action)>=5000 )
+    if( (uint32_t)(MILLIS-tick_action)>=5000 )
     {
       RESULT=TRUE;
 
@@ -851,6 +851,33 @@ static void MENU_BIND_RX(uint8_t STEP)
   Display.display();
 }
 
+static void MENU_SELECT_RX(uint8_t Select_RX)
+{
+  Display.clearDisplay();
+  Display.setTextSize(1);
+
+  Display.setCursor(20, 5); Display.print("SELECT RX TYPE");
+  
+  Display.setCursor(0, 25); Display.print("Set: ");
+  Display.setCursor(30, 25); 
+  if(Machine.Select_RX==PPM_PWM)Display.print("PPM/PWM");
+  else if(Machine.Select_RX==IBUS)Display.print("IBUS");
+  else if(Machine.Select_RX==SBUS)Display.print("SBUS");
+  else Display.print("FIBER OPTIC");
+
+  if( strcmp((char*)Machine.ADDRESS.DUMMY_2,(char*)LGO_TECH)==0 )
+  {Display.setCursor(0, 45); Display.print("New: ");
+  Display.setCursor(30, 45);
+  if(Select_RX==PPM_PWM) Display.print("PPM/PWM");
+  else if(Select_RX==IBUS) Display.print("IBUS");
+  else if(Select_RX==SBUS) Display.print("SBUS");
+  else Display.print("FIBER OPTIC");}
+
+  _Virtual_Machine_.Select_RX = Select_RX;
+
+  Display.display();
+}
+
 static uint8_t Read_Button_OK(void) /* 1<3000 ; 2>=3000 */
 {
   static uint8_t STEP=0;
@@ -860,13 +887,13 @@ static uint8_t Read_Button_OK(void) /* 1<3000 ; 2>=3000 */
   {
     if(STEP==0)
     {
-      Tick_start=millis();
+      Tick_start=MILLIS;
       STEP=1;
     }
     else if(STEP==1)
     {
       if( strcmp((char*)Machine.ADDRESS.DUMMY_2,(char*)LGO_TECH)==0 )
-      {if( (uint32_t)(millis()-Tick_start)>=TIME_PRESS_LONG )
+      {if( (uint32_t)(MILLIS-Tick_start)>=TIME_PRESS_LONG )
       {
         RESULT_BUTTON_OK=2;
         STEP=2;    
@@ -877,7 +904,7 @@ static uint8_t Read_Button_OK(void) /* 1<3000 ; 2>=3000 */
   {
     if(STEP==1)
     {
-      Tick_stop=millis();
+      Tick_stop=MILLIS;
       
       if( (uint32_t)(Tick_stop-Tick_start)<TIME_PRESS_LONG ) RESULT_BUTTON_OK=1;
 
@@ -906,12 +933,12 @@ static uint8_t Read_Button_BACK(void) /* 1<3000 ; 2>=3000 */
   {
     if(STEP==0)
     {
-      Tick_start=millis();
+      Tick_start=MILLIS;
       STEP=1;
     }
     else if(STEP==1)
     {
-      if( (uint32_t)(millis()-Tick_start)>=TIME_PRESS_LONG )
+      if( (uint32_t)(MILLIS-Tick_start)>=TIME_PRESS_LONG )
       {
         RESULT_BUTTON_BACK=2;
         STEP=2;    
@@ -922,7 +949,7 @@ static uint8_t Read_Button_BACK(void) /* 1<3000 ; 2>=3000 */
   {
     if(STEP==1)
     {
-      Tick_stop=millis();
+      Tick_stop=MILLIS;
       
       if( strcmp((char*)Machine.CHANNEL.DUMMY_3,(char*)LGO_WEB)==0 )
       {if( (uint32_t)(Tick_stop-Tick_start)<TIME_PRESS_LONG ) RESULT_BUTTON_BACK=1;}
@@ -970,7 +997,7 @@ void LCD_INIT(void)
 
     LOGO_START();    
 
-    TickLCD=micros();
+    TickLCD=MICROS;
   }
 
 }
@@ -983,7 +1010,7 @@ void LCD_MAIN(void)
   {
     static uint8_t Start_CountDown=0;
 
-    if( (uint32_t)(micros()-TickLCD)>=10000 )
+    if( (uint32_t)(MICROS-TickLCD)>=10000 )
     {
       ST1 = map(Machine.CHANNEL.Channel_1.Trim_Value, Machine.CHANNEL.Channel_1.Limit.MIN, \
                 Machine.CHANNEL.Channel_1.Limit.MAX,0,100);  
@@ -998,7 +1025,7 @@ void LCD_MAIN(void)
                   &Machine.Minute, &Machine.Second, \
                   (char*)"V24OL", &RF_SCREEN, &Machine.ADDRESS.RX_INFO);
 
-      TickLCD=micros();
+      TickLCD=MICROS;
     }
 
     if(Start_CountDown==1) /* Start count down */
@@ -1148,8 +1175,13 @@ void LCD_MAIN(void)
             MENU_SET_PIN_RX();
             break;
 
-          case AddModel:
-            FEATURE_IN_DEVELOPMENT();
+          case SelectRX:
+            if( strcmp((char*)Machine.ADDRESS.DUMMY_2,(char*)LGO_TECH)==0 )
+            {memcpy(&_Virtual_Machine_,&Machine,sizeof(Machine));}
+            MENU_SELECT_RX(UpDown_Menu_V1);
+
+            UpDown_Menu_V1=0;
+            UpDown_Menu_V1_MAX=3;
             break;
 
           case SelectModel:
@@ -1238,6 +1270,10 @@ void LCD_MAIN(void)
       case Subtrim:
         MENU_SUBTRIM();
         break;         
+
+      case SelectRX:
+        MENU_SELECT_RX(UpDown_Menu_V1);
+        break;
 
       case MixChannel:
         MENU_MIX_CHANNEL(_Virtual_Machine_.CheckMixing,\
@@ -1409,7 +1445,8 @@ void LCD_MAIN(void)
                 (MenuUPDOWN==GetChannelLimit) ||\
                 (MenuUPDOWN==SetTimeDown) ||\
                 (MenuUPDOWN==SetTXBattery) ||\
-                (MenuUPDOWN==SetRXBattery) 
+                (MenuUPDOWN==SetRXBattery) ||\
+                (MenuUPDOWN==SelectRX)
                )
         {
           if( strcmp((char*)Machine.DUMMY_5,(char*)LGO_NhanNguyen)==0 )
@@ -1583,7 +1620,8 @@ void LCD_MAIN(void)
           (MenuUPDOWN==MixChannel) or\
           (MenuUPDOWN==SetThrottleLock) or\
           (MenuUPDOWN==EndPoint) or\
-          (MenuUPDOWN==Subtrim)
+          (MenuUPDOWN==Subtrim) or\
+          (MenuUPDOWN==SelectRX)
         )
       {
         if(UpDown_Menu_V1<=0) UpDown_Menu_V1=UpDown_Menu_V1_MAX;
@@ -1798,7 +1836,8 @@ void LCD_MAIN(void)
             (MenuUPDOWN==MixChannel) or\
             (MenuUPDOWN==SetThrottleLock) or\
             (MenuUPDOWN==EndPoint) or\
-            (MenuUPDOWN==Subtrim)
+            (MenuUPDOWN==Subtrim) or\
+            (MenuUPDOWN==SelectRX)
           )
         {
           if(UpDown_Menu_V1>=UpDown_Menu_V1_MAX) UpDown_Menu_V1=0;

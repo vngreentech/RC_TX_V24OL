@@ -17,6 +17,10 @@
    * *** Decription ***
    * Add HASH stub function 
    * Add new version note
+   * Add new menu select RX: PPM/PWM, IBUS,
+   * SBUS, FIBER OPTIC 
+   * Add FreeRTOS library
+   * Update hardware abstraction
    * 
    * #NOTE: Firmware Update for TX and RX
    * 

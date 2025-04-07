@@ -25,6 +25,7 @@ void RESET_MACHINE_DEFAULT(void)
   Machine.ADDRESS.RF_Address_Read = DEFAULT_ADD_READ;
   Machine.ADDRESS.RF_Address_Write = DEFAULT_ADD_WRITE;
   Machine.ADDRESS.RF_Channel = DEFAULT_CHANNEL;
+  Machine.Select_RX = PPM_PWM;
 
   Machine.ADDRESS.RX_INFO=0;
   Machine.ADDRESS.TX_INFO = abs((uint16_t)HAL_GetUIDw0()) + abs((uint16_t)HAL_GetUIDw1()) + abs((uint16_t)HAL_GetUIDw2());

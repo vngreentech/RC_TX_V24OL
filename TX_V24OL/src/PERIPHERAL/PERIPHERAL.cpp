@@ -461,8 +461,8 @@ void Check_CountDown(uint8_t StartState)
     LastMinute=Machine.Minute;
     LastSecond=Machine.Second;
 
-    Tick_time=millis();
-    ElapsedTime = (uint32_t)((millis()-Tick_time)/1000);
+    Tick_time=MILLIS;
+    ElapsedTime = (uint32_t)((MILLIS-Tick_time)/1000);
     Remain = CountDown - ElapsedTime;
   }
   else if(StartState==2) 
@@ -472,7 +472,7 @@ void Check_CountDown(uint8_t StartState)
       Machine.Minute = Remain/60;
       Machine.Second = Remain%60;
 
-      ElapsedTime = (uint32_t)((millis()-Tick_time)/1000);
+      ElapsedTime = (uint32_t)((MILLIS-Tick_time)/1000);
       Remain = CountDown - ElapsedTime;
 
       Flag_Check_CountDown=true;

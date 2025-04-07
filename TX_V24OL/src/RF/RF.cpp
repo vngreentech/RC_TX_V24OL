@@ -46,8 +46,8 @@ void RF_BIND_MAIN(void)
     New_Add.RF_Address_Write = random(1000,65000);
     New_Add.RF_Channel = random(101,123);}
 
-    Tick_timeout=millis();
-    Tick_action=millis();
+    Tick_timeout=MILLIS;
+    Tick_action=MILLIS;
     LEDSTATE=0;
     RF_BIND_RESULT=0;
     Step=1;
@@ -85,10 +85,10 @@ void RF_BIND_MAIN(void)
 
   while(Step==1)
   {
-    if( (uint32_t)(millis()-Tick_action)>=200 )
+    if( (uint32_t)(MILLIS-Tick_action)>=200 )
     {
       LEDSTATE=!LEDSTATE;
-      Tick_action=millis();
+      Tick_action=MILLIS;
     }
     if(LEDSTATE==0)
     {
@@ -101,7 +101,7 @@ void RF_BIND_MAIN(void)
       LED_OF;
     }
 
-    if( (uint32_t)(millis()-Tick_timeout)>=10000 ) /* 30s ERROR */
+    if( (uint32_t)(MILLIS-Tick_timeout)>=10000 ) /* 30s ERROR */
     {
       Step=3;
       break;
@@ -181,7 +181,7 @@ void RF_Send_PPM(void)
     PPM_Send.CH10_PPM_Max = map(_Virtual_Machine_.CHANNEL.Channel_10.PPM_Max,PPM_MIN,PPM_MAX,0,255);}      
 
     RF_RESULT_PPM=0;
-    TickTime=millis();
+    TickTime=MILLIS;
     Step=1;
   }
   else if( Step==1 )
@@ -224,7 +224,7 @@ void RF_Send_PPM(void)
 
   if( Step==1 || Step==2 )
   {
-    if( (uint32_t)(millis()-TickTime)>=3000 )
+    if( (uint32_t)(MILLIS-TickTime)>=3000 )
     {
       RF_RESULT_PPM=2; /* Time Out */
       Feature_send=Send_Data_Control;
@@ -266,12 +266,12 @@ void RF_MAIN(void)
   static uint16_t READ_Vol_RX_Virtual;
   static uint32_t Tick_Count_Connect=0;
 
-  if( (uint32_t)( millis()-Tick_Count_Connect )>=100 )
+  if( (uint32_t)( MILLIS-Tick_Count_Connect )>=100 )
   {
     RF_DATA_SEND.Count_Connect += 1;
     if( RF_DATA_SEND.Count_Connect >= 255 ) RF_DATA_SEND.Count_Connect=0;
 
-    Tick_Count_Connect = millis();
+    Tick_Count_Connect = MILLIS;
   }
 
   if( Feature_send==Send_Data_Control )
