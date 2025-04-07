@@ -21,6 +21,7 @@
    * SBUS, FIBER OPTIC 
    * Add FreeRTOS library
    * Update hardware abstraction
+   * Update RF delay giving up
    * 
    * #NOTE: Firmware Update for TX and RX
    * 

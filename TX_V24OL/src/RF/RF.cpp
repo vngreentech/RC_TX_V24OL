@@ -3,6 +3,9 @@
 #include "RF24.h"
 #include "Adafruit_SPIDevice.h"
 
+#define RF_Delay_GIVINGUP (10U)
+#define RF_COUNT_GIVINGUP (5U)
+
 DataSendControl_typedef RF_DATA_SEND;
 uint16_t RF_ReadData;
 
@@ -20,7 +23,8 @@ void RF_INIT_BIND(void)
   if( strcmp((char*)Machine.ADDRESS.DUMMY_2,(char*)LGO_TECH)==0 )
   {radio.setChannel(111);    
   radio.setPALevel(RF24_PA_MAX);
-  radio.setDataRate(RF24_250KBPS);}        
+  radio.setDataRate(RF24_250KBPS);
+  radio.setRetries(RF_Delay_GIVINGUP, RF_COUNT_GIVINGUP);}        
 }
 
 void RF_BIND_MAIN(void)
@@ -254,6 +258,7 @@ void RF_INIT(void)
     radio.setChannel(Machine.ADDRESS.RF_Channel);                  
     radio.setDataRate(RF24_250KBPS); 
     radio.setPALevel(RF24_PA_MAX); 
+    radio.setRetries(RF_Delay_GIVINGUP, RF_COUNT_GIVINGUP);
 
     RF_DATA_SEND.Feature=Data_Control;
     Feature_send=Send_Data_Control;
