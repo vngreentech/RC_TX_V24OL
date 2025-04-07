@@ -8,6 +8,31 @@
 
   /***********************************************
    *    
+   * Version: V24OL.1.16
+   * Date: 7,Apr,2025
+   * Dev: NhanNguyen
+   * HW-TX: V24OL
+   * HW-RX: V24.2
+   * 
+   * *** Decription ***
+   * Add HASH stub function 
+   * Add new version note
+   * 
+   * #NOTE: Firmware Update for TX and RX
+   * 
+   * - Fix LỖI: 
+   * 
+   * 
+  ************************************************/
+ #ifndef FIRMWARE_VERSION
+ #define FIRMWARE_VERSION      ("V24OL.1.16")
+ #endif /* FIRMWARE_VERSION */
+ #ifndef RELEASES_DATE
+ #define RELEASES_DATE         ("7,Apr,2025")
+ #endif /* RELEASES_DATE */
+
+  /***********************************************
+   *    
    * Version: V24OL.1.15
    * Date: 11,Jan,2025
    * Dev: NhanNguyen
